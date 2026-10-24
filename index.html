@@ -2,957 +2,1175 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>귀여운 메이(MAY)와 함께하는 나날</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>귀여운 도트 고양이 메이 (MAY)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=DungGeunMo&display=swap" rel="stylesheet">
     <style>
-        * {
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            box-sizing: border-box;
-            font-family: 'DungGeunMo', monospace, sans-serif;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Press+Start+2P&display=swap');
 
-        body, html {
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+            background-color: #1a1528;
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
             overflow: hidden;
-            background-color: #1a102f;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* Responsive pixel canvas container */
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            background: #110d1a;
         }
 
         canvas {
             image-rendering: pixelated;
             image-rendering: crisp-edges;
-            display: block;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
-        .pixel-box {
-            border: 4px solid #4a3b5c;
-            box-shadow: inset -4px -4px 0px 0px #2a1f3d, inset 4px 4px 0px 0px #8b71a8, 0 8px 0 0 rgba(0,0,0,0.4);
-            background-color: #382b4a;
-            color: #ffffff;
-        }
-
+        /* Retro Glassmorphic Button Styling */
         .pixel-btn {
-            border: 3px solid #3d2218;
-            background-color: #fca311;
-            box-shadow: inset -3px -3px 0px 0px #b56c00, inset 3px 3px 0px 0px #ffc857;
-            color: #2b1704;
-            transition: transform 0.05s, background-color 0.1s;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 14px;
+            color: #ffffff;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+            transition: all 0.15s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             cursor: pointer;
-            text-shadow: 1px 1px 0px #ffe599;
+        }
+
+        .pixel-btn:hover {
+            background: rgba(255, 255, 255, 0.28);
+            transform: translateY(-2px);
+            border-color: #ffd1dc;
         }
 
         .pixel-btn:active {
-            transform: translateY(2px);
-            box-shadow: inset -1px -1px 0px 0px #b56c00, inset 1px 1px 0px 0px #ffc857;
+            transform: translateY(1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
         }
 
-        .pixel-btn-purple {
-            border: 3px solid #231238;
-            background-color: #9d4edd;
-            box-shadow: inset -3px -3px 0px 0px #5a189a, inset 3px 3px 0px 0px #e0aaff;
-            color: #ffffff;
-            text-shadow: 1px 1px 0px #3c096c;
+        .pixel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .pixel-btn-purple:active {
-            transform: translateY(2px);
-        }
-
-        /* Prevent context menu and callouts on touch hold */
-        body {
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
+        /* Mobile Key Controls styling */
+        .touch-key {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(6px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 18px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
             user-select: none;
-            touch-action: manipulation;
+        }
+        .touch-key:active {
+            background: rgba(255, 215, 0, 0.5);
+            transform: scale(0.95);
         }
     </style>
 </head>
-<body class="select-none touch-none">
+<body class="flex items-center justify-center min-h-screen">
 
-    <!-- Container maintaining 16:9 or auto mobile scaling -->
-    <div id="game-container" class="relative w-full h-full max-w-[800px] max-h-[600px] flex flex-col justify-between items-center p-2 sm:p-4 overflow-hidden">
-        
-        <!-- Game Canvas Layer -->
-        <canvas id="mainCanvas" class="w-full h-full absolute inset-0 z-0 rounded-lg shadow-2xl"></canvas>
+    <div id="game-container">
+        <!-- Canvas for Pixel Rendering -->
+        <canvas id="gameCanvas" width="320" height="240"></canvas>
 
-        <!-- UI Top Overlay (Main Room Mode) -->
-        <div id="room-ui" class="relative z-10 w-full flex justify-between items-center p-2">
-            <div class="pixel-box px-3 py-1 text-xs sm:text-sm rounded flex items-center gap-2 bg-opacity-90">
-                <span>🐾 메이(MAY)</span>
-                <span class="text-yellow-300">오드아이 고양이</span>
-            </div>
-            <button id="btn-minigame" class="pixel-btn px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base font-bold rounded flex items-center gap-1">
-                🎮 미니게임 시작
+        <!-- Top Right Control Bar -->
+        <div class="absolute top-4 right-4 flex items-center space-x-2 z-20">
+            <!-- Feed Button -->
+            <button id="feedBtn" class="pixel-btn px-4 py-2 text-sm sm:text-base flex items-center space-x-1">
+                <span>🐟</span>
+                <span>밥주기</span>
+            </button>
+            <!-- BGM Toggle Button -->
+            <button id="bgmBtn" class="pixel-btn px-3 py-2 text-sm sm:text-base">
+                🔊 BGM
+            </button>
+            <!-- Mini-Game Start Button -->
+            <button id="miniGameBtn" class="pixel-btn px-4 py-2 text-sm sm:text-base flex items-center space-x-1 bg-amber-500/30 border-amber-300">
+                <span>🎮</span>
+                <span>물고기 받기</span>
             </button>
         </div>
 
-        <!-- UI Top Overlay (Mini Game Mode) -->
-        <div id="game-ui" class="relative z-10 w-full flex justify-between items-center p-2 hidden">
-            <button id="btn-game-back" class="pixel-btn-purple px-3 py-1.5 text-xs sm:text-sm font-bold rounded">
-                ⬅ 돌아가기
-            </button>
-            
-            <div class="flex items-center gap-3 pixel-box px-3 py-1 text-xs sm:text-sm rounded bg-opacity-90">
-                <div id="game-score" class="text-yellow-300 font-bold">점수: 0</div>
-                <div id="game-lives" class="text-red-400">❤️❤️❤️</div>
-            </div>
-
-            <button id="btn-game-pause" class="pixel-btn-purple px-3 py-1.5 text-xs sm:text-sm font-bold rounded">
-                ⏸️ 일시정지
-            </button>
+        <!-- Speech Bubble Overlay for Main Screen -->
+        <div id="dialogueBox" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-11/12 max-w-md bg-purple-950/80 backdrop-blur-md border-2 border-purple-300/60 rounded-2xl p-3.5 text-center text-white text-sm sm:text-base shadow-2xl transition-opacity duration-300 z-10 pointer-events-none">
+            <span id="dialogueText">야옹~ 메이를 쓰다듬거나 밥을 줘보냥! 🐾</span>
         </div>
 
-        <!-- Touch Controls Overlay for Mobile Game Control -->
-        <div id="touch-controls" class="relative z-10 w-full flex justify-between px-6 pb-2 hidden sm:hidden">
-            <button id="btn-touch-left" class="pixel-btn w-16 h-16 rounded-full text-2xl font-bold flex items-center justify-center active:bg-yellow-500 opacity-80">
-                ◀
-            </button>
-            <button id="btn-touch-right" class="pixel-btn w-16 h-16 rounded-full text-2xl font-bold flex items-center justify-center active:bg-yellow-500 opacity-80">
-                ▶
-            </button>
+        <!-- Mobile Touch Game Controls (Hidden by default) -->
+        <div id="touchControls" class="absolute bottom-4 left-0 right-0 px-6 flex justify-between items-center pointer-events-auto hidden z-30">
+            <div id="btnLeft" class="touch-key w-20 h-16 text-3xl">◀</div>
+            <div id="btnRight" class="touch-key w-20 h-16 text-3xl">▶</div>
         </div>
 
-        <!-- Bottom Dialogue & Status Box -->
-        <div id="dialogue-container" class="relative z-10 w-full">
-            <div class="pixel-box w-full p-3 sm:p-4 rounded-lg bg-opacity-95 flex flex-col gap-1 min-h-[76px] justify-center">
-                <div class="flex items-center justify-between border-b border-purple-400/30 pb-1 mb-1">
-                    <span id="dialogue-speaker" class="text-xs sm:text-sm text-purple-300 font-bold">마이 (MAY)</span>
-                    <span class="text-[10px] sm:text-xs text-gray-400">터치해서 고양이와 교감해보세요!</span>
-                </div>
-                <p id="dialogue-text" class="text-xs sm:text-base leading-relaxed text-yellow-100">
-                    야옹~ 방 안에서 따뜻한 햇살을 쬐고 있다냥! 🐾
-                </p>
-            </div>
-        </div>
-
-        <!-- Pause Modal -->
-        <div id="pause-modal" class="absolute inset-0 z-30 bg-black/70 flex flex-col items-center justify-center gap-4 hidden">
-            <div class="pixel-box p-6 rounded-lg text-center max-w-xs w-full">
-                <h2 class="text-xl font-bold text-yellow-300 mb-4">⏸️ 일시정지됨</h2>
-                <div class="flex flex-col gap-3">
-                    <button id="btn-resume" class="pixel-btn py-2 text-sm font-bold rounded">▶ 계속하기</button>
-                    <button id="btn-restart" class="pixel-btn py-2 text-sm font-bold rounded">🔄 재도전</button>
-                    <button id="btn-pause-exit" class="pixel-btn-purple py-2 text-sm font-bold rounded">🏠 돌아가기</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Game Over Modal -->
-        <div id="gameover-modal" class="absolute inset-0 z-30 bg-black/75 flex flex-col items-center justify-center gap-4 hidden">
-            <div class="pixel-box p-6 rounded-lg text-center max-w-xs w-full">
-                <h2 class="text-xl font-bold text-red-400 mb-2">😿 게임 오버!</h2>
-                <p class="text-xs text-gray-300 mb-3">털뭉치를 너무 많이 피하지 못했다냥...</p>
-                <div class="bg-black/40 p-3 rounded mb-4 text-sm">
-                    <div>최종 점수: <span id="final-score" class="text-yellow-300 font-bold">0</span>점</div>
-                    <div class="text-xs text-purple-300 mt-1">최고 기록: <span id="high-score">0</span>점</div>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <button id="btn-gameover-restart" class="pixel-btn py-2 text-sm font-bold rounded">🔄 다시 도전하기</button>
-                    <button id="btn-gameover-exit" class="pixel-btn-purple py-2 text-sm font-bold rounded">🏠 돌아가기</button>
+        <!-- Mini Game Pause/Result Modal -->
+        <div id="gameModal" class="absolute inset-0 bg-black/75 backdrop-blur-sm flex flex-col items-center justify-center hidden z-40">
+            <div class="bg-indigo-950/90 border-2 border-indigo-400 p-6 rounded-2xl max-w-xs text-center shadow-2xl text-white space-y-4">
+                <h2 id="modalTitle" class="text-2xl font-bold text-yellow-300">일시 정지</h2>
+                <p id="modalBody" class="text-sm opacity-90">게임을 일시 정지했습니다.</p>
+                <div class="flex flex-col space-y-2 pt-2">
+                    <button id="modalResumeBtn" class="pixel-btn py-2 bg-indigo-600/40">이어하기</button>
+                    <button id="modalRestartBtn" class="pixel-btn py-2 bg-amber-600/40">다시하기</button>
+                    <button id="modalExitBtn" class="pixel-btn py-2 bg-rose-600/40">메인으로</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Application Engine Logic -->
     <script>
-        /* --- Web Audio Synthesizer (8-Bit Retro Chiptune SFX) --- */
-        class RetroAudio {
+        // --- Web Audio Synthesizer (BGM & Meow Sound Effects) ---
+        class AudioEngine {
             constructor() {
                 this.ctx = null;
+                this.bgmGain = null;
+                this.sfxGain = null;
+                this.isMuted = false;
+                this.isPlayingBgm = false;
+                this.bgmInterval = null;
             }
 
             init() {
                 if (!this.ctx) {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    this.ctx = new AudioContext();
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                    
+                    this.bgmGain = this.ctx.createGain();
+                    this.bgmGain.gain.value = 0.12;
+                    this.bgmGain.connect(this.ctx.destination);
+
+                    this.sfxGain = this.ctx.createGain();
+                    this.sfxGain.gain.value = 0.25;
+                    this.sfxGain.connect(this.ctx.destination);
                 }
                 if (this.ctx.state === 'suspended') {
                     this.ctx.resume();
                 }
             }
 
-            // High pitched cute meow sound synthesizer
-            playMeow() {
+            // Synthesize realistic cute nasal meow
+            playMeow(pitchMultiplier = 1.0) {
                 this.init();
-                if (!this.ctx) return;
-                const now = this.ctx.currentTime;
-                
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
+                if (this.isMuted) return;
 
-                osc.type = 'sine';
-                // Frequency pitch curve simulating a cat meow
-                osc.frequency.setValueAtTime(600, now);
-                osc.frequency.linearRampToValueAtTime(880, now + 0.12);
-                osc.frequency.exponentialRampToValueAtTime(500, now + 0.35);
-
-                gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(0.3, now + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-
-                osc.start(now);
-                osc.stop(now + 0.35);
-            }
-
-            // Fish catch sound (Upward frequency arpeggio)
-            playCatch() {
-                this.init();
-                if (!this.ctx) return;
                 const now = this.ctx.currentTime;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
-
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(400, now);
-                osc.frequency.setValueAtTime(600, now + 0.05);
-                osc.frequency.setValueAtTime(800, now + 0.1);
-
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
-
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-
-                osc.start(now);
-                osc.stop(now + 0.18);
-            }
-
-            // Hairball hit sound (Low buzz noise)
-            playHit() {
-                this.init();
-                if (!this.ctx) return;
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
 
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(160, now);
-                osc.frequency.linearRampToValueAtTime(70, now + 0.2);
+                
+                // Frequency contour for "Me-ow"
+                const startFreq = 580 * pitchMultiplier;
+                const peakFreq = 780 * pitchMultiplier;
+                const endFreq = 420 * pitchMultiplier;
 
-                gain.gain.setValueAtTime(0.25, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.frequency.setValueAtTime(startFreq, now);
+                osc.frequency.exponentialRampToValueAtTime(peakFreq, now + 0.12);
+                osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.45);
 
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
+                // Vocal filter modulation
+                filter.type = 'bandpass';
+                filter.Q.value = 3.5;
+                filter.frequency.setValueAtTime(900, now);
+                filter.frequency.exponentialRampToValueAtTime(1600, now + 0.15);
+                filter.frequency.exponentialRampToValueAtTime(650, now + 0.45);
+
+                // Volume Envelope
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.35, now + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.sfxGain);
 
                 osc.start(now);
-                osc.stop(now + 0.2);
+                osc.stop(now + 0.5);
             }
 
-            // Game over sound
-            playGameOver() {
+            // Cute Munching Sound Effect for Feeding
+            playMunchSound() {
                 this.init();
-                if (!this.ctx) return;
+                if (this.isMuted) return;
+
+                const now = this.ctx.currentTime;
+                for (let i = 0; i < 3; i++) {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const startTime = now + i * 0.15;
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(320 - i * 20, startTime);
+                    osc.frequency.exponentialRampToValueAtTime(140, startTime + 0.08);
+
+                    gain.gain.setValueAtTime(0.2, startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.08);
+
+                    osc.connect(gain);
+                    gain.connect(this.sfxGain);
+
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.09);
+                }
+            }
+
+            // Sound effect for mini-game items
+            playItemSound(isGolden = false, isHarmful = false) {
+                this.init();
+                if (this.isMuted) return;
+
                 const now = this.ctx.currentTime;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
 
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(350, now);
-                osc.frequency.setValueAtTime(300, now + 0.15);
-                osc.frequency.setValueAtTime(250, now + 0.3);
-                osc.frequency.setValueAtTime(180, now + 0.45);
-
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.75);
+                if (isHarmful) {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                } else if (isGolden) {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.setValueAtTime(800, now + 0.08);
+                    osc.frequency.setValueAtTime(1200, now + 0.16);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                } else {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+                }
 
                 osc.connect(gain);
-                gain.connect(this.ctx.destination);
+                gain.connect(this.sfxGain);
 
                 osc.start(now);
-                osc.stop(now + 0.75);
+                osc.stop(now + (isHarmful ? 0.25 : 0.3));
+            }
+
+            // Lo-Fi Procedural Cozy Chord Progression BGM
+            startBgm() {
+                this.init();
+                if (this.isPlayingBgm) return;
+                this.isPlayingBgm = true;
+
+                const chords = [
+                    [261.63, 329.63, 392.00, 493.88], // Cmaj7
+                    [220.00, 261.63, 329.63, 392.00], // Am7
+                    [174.61, 220.00, 261.63, 329.63], // Fmaj7
+                    [196.00, 246.94, 293.66, 349.23]  // G7
+                ];
+                let chordIdx = 0;
+
+                const playChord = () => {
+                    if (!this.isPlayingBgm || this.isMuted) return;
+                    const now = this.ctx.currentTime;
+                    const chord = chords[chordIdx];
+                    
+                    chord.forEach((freq) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+
+                        gain.gain.setValueAtTime(0.001, now);
+                        gain.gain.linearRampToValueAtTime(0.035, now + 0.4);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.8);
+
+                        osc.connect(gain);
+                        gain.connect(this.bgmGain);
+
+                        osc.start(now);
+                        osc.stop(now + 2.9);
+                    });
+
+                    chordIdx = (chordIdx + 1) % chords.length;
+                };
+
+                playChord();
+                this.bgmInterval = setInterval(playChord, 3000);
+            }
+
+            toggleBgm() {
+                this.isMuted = !this.isMuted;
+                if (!this.isMuted && !this.isPlayingBgm) {
+                    this.startBgm();
+                }
+                return !this.isMuted;
             }
         }
 
-        const audio = new RetroAudio();
+        const audio = new AudioEngine();
 
-        /* --- Canvas & Pixel Graphic Engine --- */
-        const canvas = document.getElementById('mainCanvas');
+        // --- Canvas & Core Setup ---
+        const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
 
-        // Virtual Pixel Grid Resolution (High detail pixel scale)
-        const V_WIDTH = 320;
-        const V_HEIGHT = 240;
+        // UI Elements
+        const dialogueBox = document.getElementById('dialogueBox');
+        const dialogueText = document.getElementById('dialogueText');
+        const feedBtn = document.getElementById('feedBtn');
+        const bgmBtn = document.getElementById('bgmBtn');
+        const miniGameBtn = document.getElementById('miniGameBtn');
+        const touchControls = document.getElementById('touchControls');
+        const btnLeft = document.getElementById('btnLeft');
+        const btnRight = document.getElementById('btnRight');
+        
+        // Modal Elements
+        const gameModal = document.getElementById('gameModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        const modalResumeBtn = document.getElementById('modalResumeBtn');
+        modalResumeBtn.onclick = resumeMiniGame;
+        const modalRestartBtn = document.getElementById('modalRestartBtn');
+        modalRestartBtn.onclick = startMiniGame;
+        const modalExitBtn = document.getElementById('modalExitBtn');
+        modalExitBtn.onclick = exitMiniGame;
 
-        // Offscreen canvas for crisp pixel rendering
-        const pixelBuffer = document.createElement('canvas');
-        pixelBuffer.width = V_WIDTH;
-        pixelBuffer.height = V_HEIGHT;
-        const pCtx = pixelBuffer.getContext('2d');
+        // Game State Variables
+        let gameState = 'MAIN'; // 'MAIN', 'MINIGAME', 'PAUSED', 'GAMEOVER'
+        let frameCount = 0;
 
-        function resizeCanvas() {
-            const container = document.getElementById('game-container');
-            const rect = container.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
+        // Feeding State Variables
+        let isFeeding = false;
+        let feedTimer = 0;
+        let feedDuration = 180; // 3 seconds at 60FPS
+
+        // Random dialogue scripts
+        const meowDialogues = [
+            "야옹~ 쓰다듬어줘서 고맙다냥!",
+            "골골골... 기분이 최보다냥! 💖",
+            "냐옹~ 나랑 놀아줄 거냐냥?",
+            "오늘도 좋은 하루 되라냥! ✨",
+            "메이는 간식이 먹고 싶다냥~ 🐟",
+            "야옹! 꼬리를 살랑살랑~"
+        ];
+
+        const eatDialogues = [
+            "냠냠! 정말 맛있다냥! 🐟",
+            "배부르고 기분이 좋다냥~ ✨",
+            "우물우물... 고맙다냥! 💖",
+            "최고의 간식이다냥! 야옹~"
+        ];
+
+        function setDialogue(text, durationMs = 3000) {
+            dialogueText.textContent = text;
+            dialogueBox.style.opacity = '1';
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
 
-        /* --- State Management --- */
-        let currentMode = 'ROOM'; // 'ROOM' or 'GAME'
-        let gamePaused = false;
-        let gameOver = false;
-
-        // Random dialogue lists
-        const touchDialogues = [
-            "야옹~ 젤리가 몰랑몰랑해서 기분 좋다냥! 🐾",
-            "골골골... 집사 손길이 제일 좋다냥! ❤️",
-            "야옹! 심심했는데 더 쓰다듬어달라냥!",
-            "메이의 왼쪽 눈은 골드, 오른쪽 눈은 에메랄드 블루라냥! ✨",
-            "MAY목걸이는 마이의 소중한 보물이다냥!",
-            "골골골... 마이는 지금 행복하다냥~ 💤",
-            "따뜻한 햇빛을 받아 졸음이 쏟아진다냥..."
-        ];
-
-        const idleScratchDialogues = [
-            "메이가 뒷발로 귀 뒤를 야무지게 긁적입니다 🐾",
-            "쓱쓱쓱! 귀 뒤가 가려웠다냥!",
-            "메이가 앙증맞은 뒷발을 바쁘게 움직입니다."
-        ];
-
-        const idleWashDialogues = [
-            "메이가 핥은 앞발로 야무지게 세수를 합니다 🧼",
-            "쓱싹쓱싹, 단정한 고양이는 세수를 게을리하지 않는다냥!",
-            "메이가 털을 단정하게 정돈하고 있습니다."
-        ];
-
-        /* --- Cat Character (MAY) State & Animation Systems --- */
+        // --- CAT "MAY" MODEL ---
         const cat = {
-            x: V_WIDTH / 2,
-            y: 165,
-            width: 36,
-            height: 38,
-            state: 'IDLE', // IDLE, SCRATCH, WASH, MEOW, RUN
-            facingLeft: true,
-            frame: 0,
-            animTimer: 0,
+            x: 132,
+            y: 138,
+            width: 56,
+            height: 52,
+            action: 'IDLE', // 'IDLE', 'SCRATCH', 'GROOM', 'EAT', 'WALK'
+            actionTimer: 0,
+            blinkTimer: 0,
+            isBlinking: false,
+            dir: 1, // 1: right, -1: left
+            speed: 2.5,
             
-            // Random Action Timers
-            scratchTimer: 0,
-            washTimer: 0,
+            // Random Idle Timers
+            nextScratchTime: 0,
+            nextGroomTime: 0,
 
-            // Touch Bounce scale
-            scaleY: 1,
-            scaleX: 1
+            resetIdleTimers() {
+                const now = Date.now();
+                // Ear scratch (~2 times / min)
+                this.nextScratchTime = now + (20 + Math.random() * 20) * 1000;
+                // Face wash / Groom (~1 time / min)
+                this.nextGroomTime = now + (45 + Math.random() * 30) * 1000;
+            }
         };
+        cat.resetIdleTimers();
 
-        // Initialize random trigger times (Scratch ~2/min, Wash ~1/min)
-        function resetActionTimers() {
-            // ~25 to 35 seconds for scratch
-            cat.scratchTimer = (20 + Math.random() * 15) * 60;
-            // ~50 to 70 seconds for wash
-            cat.washTimer = (45 + Math.random() * 25) * 60;
-        }
-        resetActionTimers();
-
-        /* --- Mini-Game Logic --- */
-        const game = {
+        // --- MINI-GAME STATE ---
+        const miniGame = {
             score: 0,
             lives: 3,
-            highScore: localStorage.getItem('may_cat_highscore') || 0,
+            timeLeft: 30,
+            timerInterval: null,
             items: [],
             spawnTimer: 0,
-            spawnInterval: 45,
-            playerX: V_WIDTH / 2,
-            playerSpeed: 3.2,
             keys: { left: false, right: false }
         };
 
-        // Prevent browser defaults on game arrow key controls
-        window.addEventListener('keydown', (e) => {
-            if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'a', 'A', 'd', 'D'].includes(e.key)) {
-                e.preventDefault();
-            }
-            if (currentMode === 'GAME' && !gamePaused && !gameOver) {
-                if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') game.keys.left = true;
-                if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') game.keys.right = true;
-            }
-        }, { passive: false });
+        // --- PIXEL ART GRAPHICS DRAWING FUNCTIONS ---
 
-        window.addEventListener('keyup', (e) => {
-            if (['ArrowLeft', 'ArrowRight', 'a', 'A', 'd', 'D'].includes(e.key)) {
-                e.preventDefault();
-            }
-            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') game.keys.left = false;
-            if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') game.keys.right = false;
-        }, { passive: false });
+        // 1. Cozy Bedroom Background with Young Couple (Girl & Boy)
+        function drawBackground() {
+            // Room walls (Cozy Lavender/Purple tone)
+            ctx.fillStyle = '#2c2243';
+            ctx.fillRect(0, 0, 320, 160);
 
-        // Touch Control Listeners for Mobile
-        const btnLeft = document.getElementById('btn-touch-left');
-        const btnRight = document.getElementById('btn-touch-right');
+            // Wood Floor
+            ctx.fillStyle = '#6e4533';
+            ctx.fillRect(0, 160, 320, 80);
 
-        const bindTouch = (btn, key) => {
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); game.keys[key] = true; });
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); game.keys[key] = false; });
-            btn.addEventListener('mousedown', (e) => { e.preventDefault(); game.keys[key] = true; });
-            btn.addEventListener('mouseup', (e) => { e.preventDefault(); game.keys[key] = false; });
-        };
-        bindTouch(btnLeft, 'left');
-        bindTouch(btnRight, 'right');
-
-        /* --- Pixel Art Drawing Functions --- */
-
-        // Render Room Background (Wood floor + soft purple wallpaper + bed corner)
-        function drawRoomBackground() {
-            // Wall (Soft Pastel Purple wallpaper with subtle vertical stripe detail)
-            pCtx.fillStyle = '#b8a2d1';
-            pCtx.fillRect(0, 0, V_WIDTH, 150);
-
-            pCtx.fillStyle = '#c5b1dd';
-            for (let x = 0; x < V_WIDTH; x += 16) {
-                pCtx.fillRect(x, 0, 8, 150);
+            // Wood Floor Planks Lines
+            ctx.fillStyle = '#593626';
+            for (let y = 175; y < 240; y += 15) {
+                ctx.fillRect(0, y, 320, 2);
             }
 
-            // Baseboard
-            pCtx.fillStyle = '#5c4033';
-            pCtx.fillRect(0, 146, V_WIDTH, 6);
-            pCtx.fillStyle = '#3d2b22';
-            pCtx.fillRect(0, 151, V_WIDTH, 1);
+            // Wall Trim Baseboard
+            ctx.fillStyle = '#482c3d';
+            ctx.fillRect(0, 154, 320, 6);
 
-            // Wood Floor Boards
-            pCtx.fillStyle = '#d2a679';
-            pCtx.fillRect(0, 152, V_WIDTH, 88);
+            // Window showing starry night sky
+            ctx.fillStyle = '#1c1538';
+            ctx.fillRect(20, 20, 60, 70);
+            ctx.fillStyle = '#ffd1dc'; // Window frame
+            ctx.fillRect(18, 18, 64, 2);
+            ctx.fillRect(18, 88, 64, 4);
+            ctx.fillRect(18, 18, 2, 72);
+            ctx.fillRect(80, 18, 2, 72);
+            ctx.fillRect(48, 18, 3, 72); // Grid vertical
+            ctx.fillRect(18, 52, 64, 3); // Grid horizontal
 
-            // Floor Plank Lines
-            pCtx.fillStyle = '#b5895a';
-            for (let y = 166; y < V_HEIGHT; y += 14) {
-                pCtx.fillRect(0, y, V_WIDTH, 1);
-            }
-            for (let y = 152; y < V_HEIGHT; y += 14) {
-                for (let x = (y * 3) % 40; x < V_WIDTH; x += 60) {
-                    pCtx.fillRect(x, y, 1, 14);
-                }
-            }
-
-            // Bed in the corner (Left side)
-            // Bed frame
-            pCtx.fillStyle = '#7a5230';
-            pCtx.fillRect(0, 120, 55, 45);
-            // Blanket (Cozy Mint/Cyan)
-            pCtx.fillStyle = '#94d2bd';
-            pCtx.fillRect(0, 125, 50, 35);
-            pCtx.fillStyle = '#e9d8a6'; // Blanket trim
-            pCtx.fillRect(45, 125, 5, 35);
-            // Pillow
-            pCtx.fillStyle = '#ffffff';
-            pCtx.fillRect(5, 122, 22, 12);
-            pCtx.fillStyle = '#e0e0e0';
-            pCtx.fillRect(5, 132, 22, 2);
-
-            // Cozy Rug under cat
-            pCtx.fillStyle = '#f4acb7';
-            pCtx.beginPath();
-            pCtx.ellipse(V_WIDTH / 2, 185, 48, 18, 0, 0, Math.PI * 2);
-            pCtx.fill();
-            pCtx.fillStyle = '#ffcad4';
-            pCtx.beginPath();
-            pCtx.ellipse(V_WIDTH / 2, 185, 42, 15, 0, 0, Math.PI * 2);
-            pCtx.fill();
-
-            // Window showing starry night/sky on the right
-            pCtx.fillStyle = '#5c4033'; // Window frame
-            pCtx.fillRect(230, 25, 60, 70);
-            pCtx.fillStyle = '#1d3557'; // Window glass
-            pCtx.fillRect(234, 29, 52, 62);
             // Stars in window
-            pCtx.fillStyle = '#f1faee';
-            pCtx.fillRect(245, 40, 2, 2);
-            pCtx.fillRect(270, 55, 2, 2);
-            pCtx.fillRect(255, 70, 2, 2);
-            // Moon
-            pCtx.fillStyle = '#ffb703';
-            pCtx.fillRect(268, 36, 8, 8);
-            // Window grid
-            pCtx.fillStyle = '#5c4033';
-            pCtx.fillRect(259, 29, 2, 62);
-            pCtx.fillRect(234, 58, 52, 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(30, 30, 2, 2);
+            ctx.fillRect(65, 40, 2, 2);
+            ctx.fillRect(40, 70, 2, 2);
+            ctx.fillStyle = '#fff3a1';
+            ctx.fillRect(60, 25, 6, 6); // Moon
+
+            // Cozy Sofa/Bed on the right
+            ctx.fillStyle = '#433054';
+            ctx.fillRect(170, 95, 130, 65);
+            ctx.fillStyle = '#5c4373';
+            ctx.fillRect(165, 110, 140, 35); // Sofa cushion
+            ctx.fillStyle = '#322340';
+            ctx.fillRect(165, 145, 140, 15); // Legs shadow
+
+            // Decorative Wall Frame
+            ctx.fillStyle = '#e8b87d';
+            ctx.fillRect(115, 30, 40, 30);
+            ctx.fillStyle = '#6b93b8';
+            ctx.fillRect(118, 33, 34, 24);
+            // Little pixel heart art in frame
+            ctx.fillStyle = '#ff7b9c';
+            ctx.fillRect(132, 42, 6, 4);
+            ctx.fillRect(130, 40, 4, 4);
+            ctx.fillRect(138, 40, 4, 4);
+
+            // Plant in corner
+            ctx.fillStyle = '#a65b32'; // Pot
+            ctx.fillRect(280, 135, 18, 22);
+            ctx.fillStyle = '#3a7d44'; // Leaves
+            ctx.fillRect(276, 115, 12, 22);
+            ctx.fillRect(288, 110, 14, 26);
+            ctx.fillRect(272, 122, 22, 12);
+
+            // --- PIXEL ART COUPLE IN BACKGROUND (Young Girl & Boy) ---
+            drawBackgroundCouple(190, 82);
         }
 
-        /* --- Draw Detailed Short-Haired White Cat (MAY) with Heterochromia & Tag --- */
-        function drawCat(cx, cy, frame, state, scaleX = 1, scaleY = 1) {
-            pCtx.save();
-            pCtx.translate(cx, cy);
-            pCtx.scale(scaleX, scaleY);
+        // Detailed Pixel Art Couple Sitting Together on Sofa
+        function drawBackgroundCouple(x, y) {
+            const breathingOffset = Math.floor(Math.sin(frameCount * 0.05) * 1);
+
+            // --- 1. YOUNG MAN (BOY) on Left ---
+            const bx = x;
+            const by = y + breathingOffset;
+
+            // Boy Hair (Cozy Dark Brown / Cap style)
+            ctx.fillStyle = '#3d2314';
+            ctx.fillRect(bx + 4, by, 16, 10);
+            ctx.fillRect(bx + 2, by + 3, 20, 6);
+
+            // Boy Face
+            ctx.fillStyle = '#ffdbac';
+            ctx.fillRect(bx + 5, by + 8, 14, 11);
+            
+            // Boy Eyes & Blinking
+            if (Math.floor(frameCount / 80) % 5 !== 0) {
+                ctx.fillStyle = '#2b1b17';
+                ctx.fillRect(bx + 8, by + 12, 2, 3);
+                ctx.fillRect(bx + 14, by + 12, 2, 3);
+            } else {
+                ctx.fillStyle = '#2b1b17';
+                ctx.fillRect(bx + 8, by + 13, 3, 1);
+                ctx.fillRect(bx + 14, by + 13, 3, 1);
+            }
+
+            // Boy Smile
+            ctx.fillStyle = '#d9777f';
+            ctx.fillRect(bx + 10, by + 17, 3, 1);
+
+            // Boy Sweater (Teal / Blue Sweater)
+            ctx.fillStyle = '#2a7b88';
+            ctx.fillRect(bx + 3, by + 19, 18, 22);
+            ctx.fillStyle = '#1e5963';
+            ctx.fillRect(bx + 3, by + 19, 18, 3); // Collar
+
+            // Boy Arms / Hands
+            ctx.fillStyle = '#2a7b88';
+            ctx.fillRect(bx, by + 22, 4, 14);
+            ctx.fillStyle = '#ffdbac';
+            ctx.fillRect(bx, by + 36, 4, 4);
+
+            // Boy Legs/Pants
+            ctx.fillStyle = '#242a38';
+            ctx.fillRect(bx + 4, by + 41, 7, 18);
+            ctx.fillRect(bx + 12, by + 41, 7, 18);
+
+            // --- 2. YOUNG GIRL (GIRL) on Right ---
+            const gx = x + 22;
+            const gy = y + breathingOffset;
+
+            // Girl Long Hair Behind
+            ctx.fillStyle = '#523219';
+            ctx.fillRect(gx + 1, gy + 4, 22, 26);
+
+            // Girl Face
+            ctx.fillStyle = '#ffe4c4';
+            ctx.fillRect(gx + 5, gy + 7, 14, 11);
+
+            // Girl Front Hair / Bangs
+            ctx.fillStyle = '#523219';
+            ctx.fillRect(gx + 4, gy + 2, 16, 7);
+            ctx.fillRect(gx + 3, gy + 5, 4, 12); // Left hair strand
+            ctx.fillRect(gx + 17, gy + 5, 4, 12); // Right hair strand
+
+            // Cute Pink Ribbon / Hairpin
+            ctx.fillStyle = '#ff7aa2';
+            ctx.fillRect(gx + 15, gy + 3, 5, 4);
+
+            // Girl Eyes & Blinking
+            if (Math.floor(frameCount / 90) % 4 !== 0) {
+                ctx.fillStyle = '#2b1b17';
+                ctx.fillRect(gx + 8, gy + 11, 2, 3);
+                ctx.fillRect(gx + 14, gy + 11, 2, 3);
+                // Cute blush
+                ctx.fillStyle = '#ffb3c1';
+                ctx.fillRect(gx + 6, gy + 14, 3, 2);
+                ctx.fillRect(gx + 15, gy + 14, 3, 2);
+            } else {
+                ctx.fillStyle = '#2b1b17';
+                ctx.fillRect(gx + 8, gy + 12, 3, 1);
+                ctx.fillRect(gx + 14, gy + 12, 3, 1);
+            }
+
+            // Girl Smile
+            ctx.fillStyle = '#e65c7b';
+            ctx.fillRect(gx + 10, gy + 16, 3, 1);
+
+            // Girl Outfit (Soft Coral / Pink Knit Sweater)
+            ctx.fillStyle = '#f48fb1';
+            ctx.fillRect(gx + 4, gy + 18, 16, 20);
+            ctx.fillStyle = '#f06292';
+            ctx.fillRect(gx + 7, gy + 18, 10, 3); // Neckline
+
+            // Girl Arm leaning towards boy
+            ctx.fillStyle = '#f48fb1';
+            ctx.fillRect(gx + 2, gy + 21, 4, 12);
+            ctx.fillStyle = '#ffe4c4';
+            ctx.fillRect(gx, gy + 32, 4, 4);
+
+            // Girl Legs/Skirt
+            ctx.fillStyle = '#37474f';
+            ctx.fillRect(gx + 5, gy + 38, 14, 8); // Skirt
+            ctx.fillStyle = '#ffe4c4';
+            ctx.fillRect(gx + 6, gy + 46, 5, 12); // Legs
+            ctx.fillRect(gx + 13, gy + 46, 5, 12);
+
+            // Tiny heart floating between couple occasionally
+            if (Math.floor(frameCount / 60) % 4 === 0) {
+                ctx.fillStyle = '#ff4081';
+                const hx = x + 18;
+                const hy = y - 6 - (frameCount % 20) * 0.3;
+                ctx.fillRect(hx, hy + 2, 5, 3);
+                ctx.fillRect(hx + 1, hy, 1, 2);
+                ctx.fillRect(hx + 3, hy, 1, 2);
+            }
+        }
+
+        // 2. Pixel Art Food Bowl (밥그릇)
+        function drawFoodBowl(x, y) {
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.fillRect(x - 2, y + 12, 32, 6);
+
+            // Bowl Base (Cute Ceramic Blue/White Bowl)
+            ctx.fillStyle = '#4a90e2';
+            ctx.fillRect(x, y + 4, 28, 10);
+            ctx.fillStyle = '#357abd';
+            ctx.fillRect(x, y + 11, 28, 3);
+
+            // Inner Bowl Lip
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x - 2, y + 2, 32, 4);
+
+            // Food / Kibble inside
+            ctx.fillStyle = '#8b5a2b';
+            ctx.fillRect(x + 2, y + 3, 24, 4);
+
+            // Mini Fish on top of kibble! 🐟
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fillRect(x + 8, y, 10, 5);
+            ctx.fillRect(x + 18, y - 1, 3, 7); // Tail
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x + 10, y + 1, 2, 2); // Eye
+        }
+
+        // 3. Cute White Short-haired Cat "MAY" with Heterochromia
+        function drawCat(cx, cy, state, frame) {
+            ctx.save();
+            ctx.translate(cx, cy);
+
+            if (cat.dir === -1) {
+                ctx.scale(-1, 1);
+                ctx.translate(-cat.width, 0);
+            }
 
             // Shadow
-            pCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-            pCtx.beginPath();
-            pCtx.ellipse(0, 16, 16, 6, 0, 0, Math.PI * 2);
-            pCtx.fill();
+            ctx.fillStyle = 'rgba(0,0,0,0.25)';
+            ctx.fillRect(8, 46, 40, 8);
 
-            // Main White Body Pixel Render
-            pCtx.fillStyle = '#ffffff'; // Base White Fur
-            pCtx.strokeStyle = '#e0e0e0'; // Fur shading
+            // Body offset during breathing/eating
+            let bodyY = 0;
+            let headY = 0;
 
-            // Body
-            pCtx.fillRect(-12, -10, 24, 22);
-            pCtx.fillRect(-14, -6, 28, 16);
+            if (state === 'EAT') {
+                // Bobbing head motion while eating
+                headY = Math.floor(Math.sin(frame * 0.3) * 4) + 4;
+            } else {
+                bodyY = Math.floor(Math.sin(frame * 0.08) * 1.5);
+            }
 
-            // Tail (wagging animation)
-            const tailY = Math.sin(frame * 0.15) * 3;
-            pCtx.lineWidth = 3;
-            pCtx.strokeStyle = '#ffffff';
-            pCtx.beginPath();
-            pCtx.moveTo(10, 8);
-            pCtx.quadraticCurveTo(20, 5 + tailY, 18, -6 + tailY);
-            pCtx.stroke();
+            // --- TAIL ---
+            ctx.fillStyle = '#f0f0f5'; // White body coat
+            const tailAngle = Math.sin(frame * 0.1) * 4;
+            ctx.fillRect(44 + tailAngle, 22 + bodyY, 6, 20);
+            ctx.fillRect(48 + tailAngle, 18 + bodyY, 6, 8);
 
-            // Paws (Sitting stance)
-            pCtx.fillStyle = '#f5f5f5';
-            pCtx.fillRect(-10, 10, 8, 6);
-            pCtx.fillRect(2, 10, 8, 6);
-            // Pink toe beans accent line
-            pCtx.fillStyle = '#ffb5a7';
-            pCtx.fillRect(-9, 15, 6, 1);
-            pCtx.fillRect(3, 15, 6, 1);
+            // --- BODY ---
+            ctx.fillStyle = '#ffffff'; // Pure white
+            ctx.fillRect(14, 20 + bodyY, 32, 26);
+            ctx.fillStyle = '#e6e6ee'; // Shading
+            ctx.fillRect(14, 38 + bodyY, 32, 8);
 
-            // Red Collar & "MAY" Tag
-            pCtx.fillStyle = '#e63946'; // Red Collar
-            pCtx.fillRect(-9, -8, 18, 3);
-            pCtx.fillStyle = '#ffb703'; // Gold Tag
-            pCtx.fillRect(-3, -5, 6, 5);
-            // Tag text "MAY" micro pixels
-            pCtx.fillStyle = '#000000';
-            pCtx.fillRect(-2, -4, 1, 3);
-            pCtx.fillRect(0, -4, 1, 3);
-            pCtx.fillRect(1, -4, 1, 3);
+            // Front Paws
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(16, 42, 10, 8);
+            ctx.fillRect(30, 42, 10, 8);
+            ctx.fillStyle = '#dcdce6';
+            ctx.fillRect(16, 48, 10, 2);
+            ctx.fillRect(30, 48, 10, 2);
 
-            // Head Base
-            pCtx.fillStyle = '#ffffff';
-            pCtx.fillRect(-15, -28, 30, 20);
-            pCtx.fillRect(-16, -25, 32, 15);
+            // --- HEAD ---
+            const hx = 6;
+            const hy = 2 + headY;
 
             // Ears
-            // Left Ear
-            pCtx.fillRect(-14, -34, 8, 8);
-            pCtx.fillRect(-12, -36, 4, 4);
-            pCtx.fillStyle = '#ffcad4'; // Inner Ear Pink
-            pCtx.fillRect(-12, -32, 4, 5);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(hx + 4, hy, 10, 10); // Left Ear
+            ctx.fillRect(hx + 24, hy, 10, 10); // Right Ear
+            // Inner Ear Pink
+            ctx.fillStyle = '#ffb6c1';
+            ctx.fillRect(hx + 6, hy + 3, 6, 6);
+            ctx.fillRect(hx + 26, hy + 3, 6, 6);
 
-            // Right Ear
-            pCtx.fillStyle = '#ffffff';
-            pCtx.fillRect(6, -34, 8, 8);
-            pCtx.fillRect(8, -36, 4, 4);
-            pCtx.fillStyle = '#ffcad4'; // Inner Ear Pink
-            pCtx.fillRect(8, -32, 4, 5);
-
-            // Ear Scratching Animation Pose Overlay
+            // Ear Scratching Animation (Fast ear wiggle)
             if (state === 'SCRATCH') {
-                const scratchLegOffset = (Math.floor(frame / 3) % 2 === 0) ? -4 : 2;
-                // Raised hind leg
-                pCtx.fillStyle = '#f0f0f0';
-                pCtx.fillRect(-18, -20 + scratchLegOffset, 8, 14);
-                // Tilted Head
-                pCtx.fillStyle = '#ffffff';
-                pCtx.fillRect(-16, -26, 30, 18);
+                const scratchWiggle = (frame % 4 < 2) ? -3 : 3;
+                ctx.fillStyle = '#ffb6c1';
+                ctx.fillRect(hx + 4 + scratchWiggle, hy, 8, 8);
+                // Paw scratching ear
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(hx - 2, hy + 4 + scratchWiggle, 10, 10);
             }
 
-            // Paw Wash Grooming Animation Pose
-            if (state === 'WASH') {
-                const washOffset = (Math.floor(frame / 6) % 2 === 0) ? -2 : 0;
-                // Paw licking near face
-                pCtx.fillStyle = '#ffffff';
-                pCtx.fillRect(-6, -22 + washOffset, 8, 8);
-                pCtx.fillStyle = '#ffb5a7'; // Pink tongue/paw
-                pCtx.fillRect(-4, -20 + washOffset, 4, 3);
-            }
+            // Head Main
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(hx, hy + 8, 38, 26);
+            ctx.fillStyle = '#e6e6ee'; // Head chin shading
+            ctx.fillRect(hx + 4, hy + 30, 30, 4);
 
-            // Eyes - Heterochromia (Left Eye: Yellow/Gold, Right Eye: Blue)
-            const blink = (frame % 120 > 115) && state === 'IDLE';
+            // --- EYES (Heterochromia: Left Yellow, Right Blue) ---
+            const isBlink = (Math.floor(frame / 60) % 4 === 0) && (state !== 'EAT');
 
-            if (blink || state === 'SCRATCH') {
-                // Happy closed eyes `^ ^`
-                pCtx.strokeStyle = '#4a4a4a';
-                pCtx.lineWidth = 1.5;
-                pCtx.beginPath();
-                pCtx.arc(-7, -18, 3, Math.PI, 0);
-                pCtx.arc(7, -18, 3, Math.PI, 0);
-                pCtx.stroke();
+            if (isBlink || state === 'EAT') {
+                // Happy/Eating closed eyes '^ ^'
+                ctx.fillStyle = '#4a4a5a';
+                ctx.fillRect(hx + 8, hy + 18, 8, 2);
+                ctx.fillRect(hx + 22, hy + 18, 8, 2);
+                ctx.fillRect(hx + 10, hy + 16, 4, 2);
+                ctx.fillRect(hx + 24, hy + 16, 4, 2);
             } else {
-                // Left Eye: Yellow / Gold
-                pCtx.fillStyle = '#ffb703';
-                pCtx.fillRect(-10, -21, 6, 7);
-                pCtx.fillStyle = '#000000'; // Pupil
-                pCtx.fillRect(-8, -20, 2, 5);
-                pCtx.fillStyle = '#ffffff'; // Shine
-                pCtx.fillRect(-10, -21, 2, 2);
+                // Left Eye: Vibrant Yellow/Amber (#ffb300)
+                ctx.fillStyle = '#ffb300';
+                ctx.fillRect(hx + 8, hy + 15, 8, 9);
+                // Right Eye: Deep Blue (#00b0ff)
+                ctx.fillStyle = '#00b0ff';
+                ctx.fillRect(hx + 22, hy + 15, 8, 9);
 
-                // Right Eye: Deep Sapphire Blue
-                pCtx.fillStyle = '#2196f3';
-                pCtx.fillRect(4, -21, 6, 7);
-                pCtx.fillStyle = '#000000'; // Pupil
-                pCtx.fillRect(6, -20, 2, 5);
-                pCtx.fillStyle = '#ffffff'; // Shine
-                pCtx.fillRect(4, -21, 2, 2);
+                // Pupils
+                ctx.fillStyle = '#111111';
+                ctx.fillRect(hx + 11, hy + 16, 3, 7);
+                ctx.fillRect(hx + 25, hy + 16, 3, 7);
+
+                // Eye Highlights
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(hx + 9, hy + 16, 2, 2);
+                ctx.fillRect(hx + 23, hy + 16, 2, 2);
             }
 
-            // Cute Nose & Mouth
-            pCtx.fillStyle = '#ffb5a7'; // Pink nose
-            pCtx.fillRect(-1, -14, 3, 2);
+            // Nose & Mouth
+            ctx.fillStyle = '#ff9ebb'; // Pink Nose
+            ctx.fillRect(hx + 17, hy + 23, 4, 3);
 
-            pCtx.strokeStyle = '#757575';
-            pCtx.lineWidth = 1;
-            pCtx.beginPath();
-            pCtx.moveTo(0, -12);
-            pCtx.lineTo(-2, -10);
-            pCtx.moveTo(0, -12);
-            pCtx.lineTo(2, -10);
-            pCtx.stroke();
+            ctx.fillStyle = '#888899'; // Mouth
+            ctx.fillRect(hx + 16, hy + 26, 2, 2);
+            ctx.fillRect(hx + 20, hy + 26, 2, 2);
 
-            // Cute Whiskers
-            pCtx.strokeStyle = '#cccccc';
-            pCtx.beginPath();
-            // Left whiskers
-            pCtx.moveTo(-12, -14); pCtx.lineTo(-20, -16);
-            pCtx.moveTo(-12, -12); pCtx.lineTo(-21, -11);
-            // Right whiskers
-            pCtx.moveTo(12, -14); pCtx.lineTo(20, -16);
-            pCtx.moveTo(12, -12); pCtx.lineTo(21, -11);
-            pCtx.stroke();
+            // Cute Blush
+            ctx.fillStyle = '#ffccd5';
+            ctx.fillRect(hx + 4, hy + 22, 4, 3);
+            ctx.fillRect(hx + 30, hy + 22, 4, 3);
 
-            pCtx.restore();
-        }
+            // Whiskers
+            ctx.fillStyle = '#cccccc';
+            ctx.fillRect(hx - 4, hy + 20, 6, 1);
+            ctx.fillRect(hx - 4, hy + 24, 6, 1);
+            ctx.fillRect(hx + 36, hy + 20, 6, 1);
+            ctx.fillRect(hx + 36, hy + 24, 6, 1);
 
-        /* --- Draw Mini-Game Sky & Objects --- */
-
-        function drawGameBackground() {
-            // Gradient Sky
-            const skyGrad = pCtx.createLinearGradient(0, 0, 0, V_HEIGHT);
-            skyGrad.addColorStop(0, '#1d3557');
-            skyGrad.addColorStop(0.7, '#457b9d');
-            skyGrad.addColorStop(1, '#a8dadc');
-            pCtx.fillStyle = skyGrad;
-            pCtx.fillRect(0, 0, V_WIDTH, V_HEIGHT);
-
-            // Soft pixel clouds floating
-            pCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            pCtx.fillRect(20, 30, 40, 12);
-            pCtx.fillRect(180, 50, 55, 15);
-            pCtx.fillRect(100, 80, 35, 10);
-
-            // Ground Grass
-            pCtx.fillStyle = '#2a9d8f';
-            pCtx.fillRect(0, V_HEIGHT - 20, V_WIDTH, 20);
-            pCtx.fillStyle = '#e9c46a';
-            pCtx.fillRect(0, V_HEIGHT - 20, V_WIDTH, 2);
-        }
-
-        // Draw Blue Fish (+10 Pts)
-        function drawBlueFish(x, y) {
-            pCtx.fillStyle = '#0077b6';
-            pCtx.fillRect(x - 6, y - 3, 12, 6);
-            pCtx.fillRect(x - 8, y - 2, 2, 4); // Tail
-            pCtx.fillStyle = '#90e0ef';
-            pCtx.fillRect(x - 4, y - 2, 4, 3);
-            pCtx.fillStyle = '#ffffff'; // Eye
-            pCtx.fillRect(x + 3, y - 2, 2, 2);
-            pCtx.fillStyle = '#000000';
-            pCtx.fillRect(x + 4, y - 2, 1, 1);
-        }
-
-        // Draw Golden Fish (+30 Pts)
-        function drawGoldFish(x, y) {
-            pCtx.fillStyle = '#ffb703';
-            pCtx.fillRect(x - 7, y - 4, 14, 8);
-            pCtx.fillRect(x - 10, y - 3, 3, 6); // Tail
-            pCtx.fillStyle = '#ffe5ec';
-            pCtx.fillRect(x - 5, y - 2, 5, 4);
-            pCtx.fillStyle = '#ffffff'; // Eye
-            pCtx.fillRect(x + 3, y - 3, 3, 3);
-            pCtx.fillStyle = '#000000';
-            pCtx.fillRect(x + 4, y - 2, 1, 1);
-        }
-
-        // Draw Hairball (-1 Life)
-        function drawHairball(x, y, frame) {
-            pCtx.fillStyle = '#6c757d';
-            pCtx.beginPath();
-            pCtx.arc(x, y, 7, 0, Math.PI * 2);
-            pCtx.fill();
-
-            // Stray hair bits
-            pCtx.strokeStyle = '#495057';
-            pCtx.lineWidth = 1;
-            const rot = (frame % 20) * 0.3;
-            for (let i = 0; i < 4; i++) {
-                const ang = rot + (i * Math.PI / 2);
-                pCtx.beginPath();
-                pCtx.moveTo(x, y);
-                pCtx.lineTo(x + Math.cos(ang) * 9, y + Math.sin(ang) * 9);
-                pCtx.stroke();
+            // --- Face Wash / Groom Animation ---
+            if (state === 'GROOM') {
+                const pawY = Math.floor(Math.sin(frame * 0.25) * 4);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(hx + 12, hy + 14 + pawY, 12, 10);
+                ctx.fillStyle = '#ffccd5'; // Paw pad
+                ctx.fillRect(hx + 16, hy + 20 + pawY, 4, 3);
             }
-        }
 
-        /* --- Dialogue Manager --- */
-        const dialogueText = document.getElementById('dialogue-text');
-        
-        function setDialogue(msg) {
-            dialogueText.textContent = msg;
-        }
-
-        /* --- Input & Touch Interaction (Petting MAY) --- */
-        function checkCatClick(clickX, clickY) {
-            if (currentMode !== 'ROOM') return;
-
-            // Map canvas click coordinate to virtual buffer coordinate
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = V_WIDTH / rect.width;
-            const scaleY = V_HEIGHT / rect.height;
-
-            const vx = (clickX - rect.left) * scaleX;
-            const vy = (clickY - rect.top) * scaleY;
-
-            // Cat bounding box check
-            if (Math.abs(vx - cat.x) < 25 && Math.abs(vy - (cat.y - 10)) < 25) {
-                // Petting Trigger
-                audio.playMeow();
-                cat.scaleX = 1.15;
-                cat.scaleY = 0.85; // Bounce squash effect
-                cat.state = 'MEOW';
-                
-                const randomMsg = touchDialogues[Math.floor(Math.random() * touchDialogues.length)];
-                setDialogue(randomMsg);
+            // --- Munching Hearts/Particles during Eating ---
+            if (state === 'EAT' && frame % 12 < 6) {
+                ctx.fillStyle = '#ff4081';
+                ctx.fillRect(hx + 32, hy - 4, 4, 4);
+                ctx.fillRect(hx - 6, hy - 2, 4, 4);
             }
+
+            // --- MAY PET NAME TAG ---
+            ctx.fillStyle = '#ffd700'; // Gold collar
+            ctx.fillRect(hx + 8, hy + 31, 22, 3);
+            ctx.fillStyle = '#ff4081'; // Heart tag
+            ctx.fillRect(hx + 17, hy + 34, 4, 4);
+
+            ctx.restore();
         }
 
-        canvas.addEventListener('click', (e) => checkCatClick(e.clientX, e.clientY));
-        canvas.addEventListener('touchstart', (e) => {
-            if (e.touches.length > 0) {
-                checkCatClick(e.touches[0].clientX, e.touches[0].clientY);
+        // --- MINI-GAME GRAPHICS ---
+        function drawFishItem(item) {
+            ctx.save();
+            ctx.translate(item.x, item.y);
+
+            if (item.type === 'BLUE') {
+                // Blue Fish (+10)
+                ctx.fillStyle = '#3a86ff';
+                ctx.fillRect(0, 2, 16, 8);
+                ctx.fillRect(16, 0, 4, 12); // Tail
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(3, 4, 2, 2); // Eye
+            } else if (item.type === 'GOLDEN') {
+                // Golden Fish (+30)
+                ctx.fillStyle = '#ffbe0b';
+                ctx.fillRect(0, 2, 18, 10);
+                ctx.fillRect(18, -1, 5, 14); // Tail
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(3, 4, 3, 3); // Eye
+                // Glow effect
+                ctx.fillStyle = '#fff3a1';
+                ctx.fillRect(-2, -2, 22, 2);
+            } else if (item.type === 'HAIRBALL') {
+                // Hairball / Obstacle (-1 Life)
+                ctx.fillStyle = '#6c757d';
+                ctx.fillRect(2, 0, 12, 16);
+                ctx.fillRect(0, 2, 16, 12);
+                ctx.fillStyle = '#495057';
+                ctx.fillRect(4, 4, 4, 4);
+                ctx.fillRect(9, 9, 3, 3);
             }
-        }, { passive: true });
 
-        /* --- Game Flow Controls --- */
-        const roomUI = document.getElementById('room-ui');
-        const gameUI = document.getElementById('game-ui');
-        const touchControls = document.getElementById('touch-controls');
-        const pauseModal = document.getElementById('pause-modal');
-        const gameoverModal = document.getElementById('gameover-modal');
+            ctx.restore();
+        }
 
-        function startMiniGame() {
+        // --- ACTION HANDLERS ---
+
+        // 1. Feeding Action
+        function feedCat() {
+            if (isFeeding || gameState !== 'MAIN') return;
+
             audio.init();
-            currentMode = 'GAME';
-            gamePaused = false;
-            gameOver = false;
-            game.score = 0;
-            game.lives = 3;
-            game.items = [];
-            game.playerX = V_WIDTH / 2;
+            audio.playMunchSound();
 
-            updateGameUI();
-            roomUI.classList.add('hidden');
-            gameUI.classList.remove('hidden');
+            isFeeding = true;
+            feedTimer = feedDuration;
+            feedBtn.disabled = true;
+
+            cat.action = 'EAT';
+            cat.dir = 1; // Face forward/bowl
+            setDialogue("냠냠! 메이가 맛있는 밥을 먹고 있다냥! 🐟", 3500);
+
+            // Periodic munch sound during eating duration
+            const munchInterval = setInterval(() => {
+                if (isFeeding && feedTimer > 20) {
+                    audio.playMunchSound();
+                } else {
+                    clearInterval(munchInterval);
+                }
+            }, 700);
+        }
+
+        // 2. Pet/Touch Cat Action
+        function petCat() {
+            if (isFeeding || gameState !== 'MAIN') return;
+
+            audio.playMeow(1.0 + Math.random() * 0.2);
+            cat.action = 'SCRATCH';
+            cat.actionTimer = 45; // Scratch animation duration
+
+            const randomMsg = meowDialogues[Math.floor(Math.random() * meowDialogues.length)];
+            setDialogue(randomMsg);
+        }
+
+        // --- MINI-GAME LOGIC ---
+        function startMiniGame() {
+            gameState = 'MINIGAME';
+            miniGame.score = 0;
+            miniGame.lives = 3;
+            miniGame.timeLeft = 30;
+            miniGame.items = [];
+            miniGame.spawnTimer = 0;
+
+            dialogueBox.style.opacity = '0'; // Hide dialogue box during game
+            gameModal.classList.add('hidden');
             touchControls.classList.remove('hidden');
-            pauseModal.classList.add('hidden');
-            gameoverModal.classList.add('hidden');
 
-            setDialogue("미니게임 시작! 하늘에서 떨어지는 생선을 가방 가득 모으자냥! 🐟");
+            cat.x = 132;
+            cat.y = 175; // Move cat to bottom floor for catching
+            cat.action = 'WALK';
+
+            clearInterval(miniGame.timerInterval);
+            miniGame.timerInterval = setInterval(() => {
+                if (gameState === 'MINIGAME') {
+                    miniGame.timeLeft--;
+                    if (miniGame.timeLeft <= 0) {
+                        endMiniGame(true);
+                    }
+                }
+            }, 1000);
         }
 
-        function exitToRoom() {
-            currentMode = 'ROOM';
-            gamePaused = false;
-            gameOver = false;
+        function pauseMiniGame() {
+            if (gameState === 'MINIGAME') {
+                gameState = 'PAUSED';
+                modalTitle.textContent = "일시 정지";
+                modalBody.textContent = `현재 점수: ${miniGame.score}점`;
+                gameModal.classList.remove('hidden');
+            }
+        }
 
-            roomUI.classList.remove('hidden');
-            gameUI.classList.add('hidden');
+        function resumeMiniGame() {
+            if (gameState === 'PAUSED') {
+                gameState = 'MINIGAME';
+                gameModal.classList.add('hidden');
+            }
+        }
+
+        function endMiniGame(isSuccess = true) {
+            gameState = 'GAMEOVER';
+            clearInterval(miniGame.timerInterval);
             touchControls.classList.add('hidden');
-            pauseModal.classList.add('hidden');
-            gameoverModal.classList.add('hidden');
 
-            setDialogue("다시 따뜻한 방으로 돌아왔다냥! 🐾");
+            modalTitle.textContent = isSuccess ? "🎉 게임 종료!" : "💔 게임 오버!";
+            modalBody.textContent = `최종 점수: ${miniGame.score}점`;
+            gameModal.classList.remove('hidden');
         }
 
-        function pauseGame() {
-            if (currentMode !== 'GAME' || gameOver) return;
-            gamePaused = true;
-            pauseModal.classList.remove('hidden');
+        function exitMiniGame() {
+            gameState = 'MAIN';
+            clearInterval(miniGame.timerInterval);
+            gameModal.classList.add('hidden');
+            touchControls.classList.add('hidden');
+
+            cat.x = 132;
+            cat.y = 138;
+            cat.action = 'IDLE';
+
+            setDialogue("메이와 함께 재미있게 놀았다냥! 🐾");
         }
 
-        function resumeGame() {
-            gamePaused = false;
-            pauseModal.classList.add('hidden');
-        }
-
-        function updateGameUI() {
-            document.getElementById('game-score').textContent = `점수: ${game.score}`;
-            document.getElementById('game-lives').textContent = '❤️'.repeat(Math.max(0, game.lives));
-        }
-
-        function triggerGameOver() {
-            gameOver = true;
-            audio.playGameOver();
-            
-            if (game.score > game.highScore) {
-                game.highScore = game.score;
-                localStorage.setItem('may_cat_highscore', game.highScore);
+        function updateMiniGame() {
+            // Player Movement
+            if (miniGame.keys.left) {
+                cat.x -= cat.speed;
+                cat.dir = -1;
+            }
+            if (miniGame.keys.right) {
+                cat.x += cat.speed;
+                cat.dir = 1;
             }
 
-            document.getElementById('final-score').textContent = game.score;
-            document.getElementById('high-score').textContent = game.highScore;
-            gameoverModal.classList.remove('hidden');
-        }
+            // Screen boundaries
+            if (cat.x < 10) cat.x = 10;
+            if (cat.x > 254) cat.x = 254;
 
-        // Button Listeners
-        document.getElementById('btn-minigame').addEventListener('click', startMiniGame);
-        document.getElementById('btn-game-back').addEventListener('click', exitToRoom);
-        document.getElementById('btn-game-pause').addEventListener('click', pauseGame);
-        document.getElementById('btn-resume').addEventListener('click', resumeGame);
-        document.getElementById('btn-restart').addEventListener('click', startMiniGame);
-        document.getElementById('btn-pause-exit').addEventListener('click', exitToRoom);
-        document.getElementById('btn-gameover-restart').addEventListener('click', startMiniGame);
-        document.getElementById('btn-gameover-exit').addEventListener('click', exitToRoom);
+            // Item Spawning
+            miniGame.spawnTimer++;
+            if (miniGame.spawnTimer % 25 === 0) {
+                const rand = Math.random();
+                let itemType = 'BLUE';
+                if (rand < 0.2) itemType = 'GOLDEN';
+                else if (rand < 0.5) itemType = 'HAIRBALL';
 
-        /* --- Main Loop Updates --- */
-
-        let frameCount = 0;
-
-        function updateRoomMode() {
-            cat.frame++;
-
-            // Smooth scale recovery after petting bounce
-            cat.scaleX += (1 - cat.scaleX) * 0.1;
-            cat.scaleY += (1 - cat.scaleY) * 0.1;
-
-            if (cat.state === 'IDLE') {
-                // Countdown action timers
-                cat.scratchTimer--;
-                cat.washTimer--;
-
-                if (cat.scratchTimer <= 0) {
-                    cat.state = 'SCRATCH';
-                    cat.animTimer = 60; // ~1 second animation (3 fast scratch cycles)
-                    const msg = idleScratchDialogues[Math.floor(Math.random() * idleScratchDialogues.length)];
-                    setDialogue(msg);
-                } else if (cat.washTimer <= 0) {
-                    cat.state = 'WASH';
-                    cat.animTimer = 90; // ~1.5 seconds grooming animation
-                    const msg = idleWashDialogues[Math.floor(Math.random() * idleWashDialogues.length)];
-                    setDialogue(msg);
-                }
-            } else if (cat.state === 'SCRATCH' || cat.state === 'WASH' || cat.state === 'MEOW') {
-                cat.animTimer--;
-                if (cat.animTimer <= 0) {
-                    cat.state = 'IDLE';
-                    resetActionTimers();
-                }
-            }
-        }
-
-        function updateGameMode() {
-            if (gamePaused || gameOver) return;
-
-            frameCount++;
-
-            // Move Player
-            if (game.keys.left) {
-                game.playerX -= game.playerSpeed;
-            }
-            if (game.keys.right) {
-                game.playerX += game.playerSpeed;
-            }
-            // Clamp player within canvas bounds
-            game.playerX = Math.max(16, Math.min(V_WIDTH - 16, game.playerX));
-
-            // Spawn Falling Items
-            game.spawnTimer++;
-            if (game.spawnTimer >= game.spawnInterval) {
-                game.spawnTimer = 0;
-                const rx = 20 + Math.random() * (V_WIDTH - 40);
-                const randVal = Math.random();
-                let type = 'BLUE';
-                if (randVal < 0.60) type = 'BLUE';      // 60% Blue Fish (+10)
-                else if (randVal < 0.82) type = 'GOLD'; // 22% Golden Fish (+30)
-                else type = 'HAIRBALL';                 // 18% Hairball (-1 Life)
-
-                const speed = 1.2 + Math.random() * 1.5;
-                game.items.push({ x: rx, y: -10, type, speed });
+                miniGame.items.push({
+                    x: Math.random() * 280 + 10,
+                    y: -10,
+                    speed: 2 + Math.random() * 2,
+                    type: itemType
+                });
             }
 
             // Update Items & Collision Detection
-            for (let i = game.items.length - 1; i >= 0; i--) {
-                const item = game.items[i];
+            for (let i = miniGame.items.length - 1; i >= 0; i--) {
+                const item = miniGame.items[i];
                 item.y += item.speed;
 
-                // Collision with Cat Player (Catch area)
-                const dist = Math.hypot(item.x - game.playerX, item.y - (V_HEIGHT - 25));
-                if (dist < 18) {
+                // Collision with Cat
+                if (
+                    item.x < cat.x + cat.width - 8 &&
+                    item.x + 16 > cat.x + 8 &&
+                    item.y < cat.y + cat.height &&
+                    item.y + 12 > cat.y + 10
+                ) {
                     if (item.type === 'BLUE') {
-                        game.score += 10;
-                        audio.playCatch();
-                    } else if (item.type === 'GOLD') {
-                        game.score += 30;
-                        audio.playCatch();
+                        miniGame.score += 10;
+                        audio.playItemSound(false, false);
+                    } else if (item.type === 'GOLDEN') {
+                        miniGame.score += 30;
+                        audio.playItemSound(true, false);
                     } else if (item.type === 'HAIRBALL') {
-                        game.lives--;
-                        audio.playHit();
-                        if (game.lives <= 0) {
-                            triggerGameOver();
+                        miniGame.lives--;
+                        audio.playItemSound(false, true);
+                        if (miniGame.lives <= 0) {
+                            endMiniGame(false);
                         }
                     }
-                    updateGameUI();
-                    game.items.splice(i, 1);
+                    miniGame.items.splice(i, 1);
                     continue;
                 }
 
-                // Item falls past bottom floor
-                if (item.y > V_HEIGHT + 10) {
-                    game.items.splice(i, 1);
+                // Remove out-of-screen items
+                if (item.y > 240) {
+                    miniGame.items.splice(i, 1);
                 }
             }
         }
 
-        /* --- Main Render Loop --- */
+        function drawMiniGameHUD() {
+            // HUD Bar
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillRect(0, 0, 320, 24);
 
-        function render() {
-            pCtx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
+            ctx.font = '10px "Press Start 2P", cursive, sans-serif';
+            ctx.fillStyle = '#ffbe0b';
+            ctx.fillText(`SCORE:${miniGame.score}`, 8, 16);
 
-            if (currentMode === 'ROOM') {
-                updateRoomMode();
-                drawRoomBackground();
-                drawCat(cat.x, cat.y, cat.frame, cat.state, cat.scaleX, cat.scaleY);
-            } else {
-                updateGameMode();
-                drawGameBackground();
+            ctx.fillStyle = '#ff4d6d';
+            ctx.fillText(`LIFE:${'❤️'.repeat(miniGame.lives)}`, 130, 16);
 
-                // Draw Falling Items
-                game.items.forEach(item => {
-                    if (item.type === 'BLUE') drawBlueFish(item.x, item.y);
-                    else if (item.type === 'GOLD') drawGoldFish(item.x, item.y);
-                    else if (item.type === 'HAIRBALL') drawHairball(item.x, item.y, frameCount);
-                });
-
-                // Draw Catching Cat at Bottom
-                drawCat(game.playerX, V_HEIGHT - 25, frameCount, 'IDLE', 0.9, 0.9);
-            }
-
-            // Upscale virtual pixel canvas to main screen canvas with crisp pixelation
-            ctx.imageSmoothingEnabled = false;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(pixelBuffer, 0, 0, canvas.width, canvas.height);
-
-            requestAnimationFrame(render);
+            ctx.fillStyle = '#4cc9f0';
+            ctx.fillText(`TIME:${miniGame.timeLeft}s`, 240, 16);
         }
 
-        // Start App Loop when Window Loads
-        window.onload = function() {
-            requestAnimationFrame(render);
+        // --- MAIN UPDATE & RENDER LOOP ---
+        function update() {
+            frameCount++;
+
+            if (gameState === 'MAIN') {
+                // Handling Feeding Timer
+                if (isFeeding) {
+                    feedTimer--;
+                    if (feedTimer <= 0) {
+                        isFeeding = false;
+                        feedBtn.disabled = false;
+                        cat.action = 'IDLE';
+
+                        // Satisfied Dialogue after eating
+                        const happyMsg = eatDialogues[Math.floor(Math.random() * eatDialogues.length)];
+                        setDialogue(happyMsg, 4000);
+                        audio.playMeow(1.2); // Happy higher pitch meow
+                    }
+                } else {
+                    // Random Ear Scratching & Face Washing (Grooming) Timers
+                    const now = Date.now();
+                    if (cat.action === 'IDLE') {
+                        if (now > cat.nextScratchTime) {
+                            cat.action = 'SCRATCH';
+                            cat.actionTimer = 50;
+                            cat.resetIdleTimers();
+                        } else if (now > cat.nextGroomTime) {
+                            cat.action = 'GROOM';
+                            cat.actionTimer = 80;
+                            cat.resetIdleTimers();
+                        }
+                    }
+
+                    // Reset temporary action timers
+                    if (cat.actionTimer > 0) {
+                        cat.actionTimer--;
+                        if (cat.actionTimer <= 0) {
+                            cat.action = 'IDLE';
+                        }
+                    }
+                }
+            } else if (gameState === 'MINIGAME') {
+                updateMiniGame();
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Background (Room + Couple)
+            drawBackground();
+
+            // 2. Food Bowl (Rendered in front of cat when feeding)
+            if (isFeeding) {
+                drawFoodBowl(cat.x + 12, cat.y + 36);
+            }
+
+            // 3. Cat Character MAY
+            drawCat(cat.x, cat.y, cat.action, frameCount);
+
+            // 4. Mini-game Specific Items & HUD
+            if (gameState === 'MINIGAME') {
+                miniGame.items.forEach(drawFishItem);
+                drawMiniGameHUD();
+            }
+        }
+
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- EVENT LISTENERS & INTERACTION ---
+
+        // Feeding Button
+        feedBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            feedCat();
+        });
+
+        // BGM Toggle
+        bgmBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const active = audio.toggleBgm();
+            bgmBtn.textContent = active ? "🔊 BGM" : "🔇 BGM";
+        });
+
+        // Mini Game Button
+        miniGameBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (gameState === 'MAIN') {
+                startMiniGame();
+            } else if (gameState === 'MINIGAME') {
+                pauseMiniGame();
+            }
+        });
+
+        // Canvas Click/Touch to Pet Cat
+        canvas.addEventListener('pointerdown', (e) => {
+            if (gameState !== 'MAIN') return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const clickX = (e.clientX - rect.left) * scaleX;
+            const clickY = (e.clientY - rect.top) * scaleY;
+
+            // Check if user clicked on Cat MAY
+            if (
+                clickX >= cat.x &&
+                clickX <= cat.x + cat.width &&
+                clickY >= cat.y &&
+                clickY <= cat.y + cat.height
+            ) {
+                petCat();
+            }
+        });
+
+        // Mobile Controls (Touch Keys)
+        const setupTouchKey = (elem, keyName) => {
+            const start = (e) => {
+                e.preventDefault();
+                miniGame.keys[keyName] = true;
+            };
+            const end = (e) => {
+                e.preventDefault();
+                miniGame.keys[keyName] = false;
+            };
+            elem.addEventListener('touchstart', start);
+            elem.addEventListener('touchend', end);
+            elem.addEventListener('mousedown', start);
+            elem.addEventListener('mouseup', end);
+            elem.addEventListener('mouseleave', end);
+        };
+
+        setupTouchKey(btnLeft, 'left');
+        setupTouchKey(btnRight, 'right');
+
+        // Keyboard Controls
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'a') miniGame.keys.left = true;
+            if (e.key === 'ArrowRight' || e.key === 'd') miniGame.keys.right = true;
+            if (e.key === 'Escape' && gameState === 'MINIGAME') pauseMiniGame();
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'a') miniGame.keys.left = false;
+            if (e.key === 'ArrowRight' || e.key === 'd') miniGame.keys.right = false;
+        });
+
+        // Start game loop on window load
+        window.onload = () => {
+            gameLoop();
         };
     </script>
 </body>
