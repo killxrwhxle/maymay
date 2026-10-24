@@ -3,248 +3,336 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f7e9d2">
-<title>Little Window — MAY the Pixel Cat</title>
+<meta name="theme-color" content="#f7ead3">
+<title>MAY's Little Window — Fish Arcade</title>
 <style>
-:root{
- --wall:#f7e9d2;--line:#ead8b9;--wood:#8e5a3b;--wood2:#b97e50;
- --wood3:#e4b77e;--ink:#70513a;--pink:#edb6ba;--cream:#fffdf7;
-}
+:root{--ink:#302b3b;--cream:#fff8e9;--paper:#f7ead3;--pink:#f4b8bf;--blue:#9bd9ee;--gold:#f5d36d;--brown:#9b735a;--shadow:#d9c5a8}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;width:100%}
-body{min-height:100svh;display:grid;place-items:center;background:#e8d5b4;color:var(--ink);font-family:"Courier New",monospace}
-button{font:inherit}
-.scene{
- position:relative;isolation:isolate;overflow:hidden;width:min(100vw,480px);height:min(100svh,820px);min-height:610px;
- border:8px solid #fff8e9;background-color:var(--wall);
- background-image:linear-gradient(var(--line) 2px,transparent 2px),linear-gradient(90deg,var(--line) 2px,transparent 2px);
- background-size:32px 32px;box-shadow:0 0 0 4px #c9ad83,0 18px 50px #8b6d4930
-}
-.wall-shadow{position:absolute;left:0;right:0;bottom:0;height:105px;background:#e4d0ad;border-top:5px solid #d2b58b;z-index:-1}
-.sun{position:absolute;top:52px;right:44px;width:27px;height:27px;background:#f4c85e;box-shadow:0 0 0 6px #f4c85e30,0 0 0 2px #dba94a}
-.sun:after{content:"";position:absolute;inset:8px;background:#ffe49a}
-.cloud{position:absolute;top:126px;left:40px;width:30px;height:8px;background:#fff9e9;box-shadow:8px -8px #fff9e9,16px 0 #fff9e9,24px 0 #fff9e9}
-.heading{position:absolute;top:42px;left:0;right:0;text-align:center;color:#8c704f;font-size:12px;letter-spacing:4px;font-weight:bold;text-shadow:2px 2px #fff8e8}
-.subtitle{position:absolute;top:66px;left:0;right:0;text-align:center;color:#b09978;font-size:10px;letter-spacing:1px}
-.window-wrap{position:absolute;top:47%;left:50%;width:min(69vw,292px);aspect-ratio:.86;transform:translate(-50%,-50%);filter:drop-shadow(8px 12px 0 #b49a7860)}
-.window{appearance:none;border:0;padding:0;position:absolute;inset:0;width:100%;height:100%;cursor:pointer;background:transparent;color:inherit;perspective:700px;-webkit-tap-highlight-color:transparent}
-.frame{position:absolute;inset:0;padding:12px;background:var(--wood);border:5px solid var(--wood2);box-shadow:inset 0 0 0 4px #754a32,inset 0 0 0 8px #b67d50}
-.frame:before{content:"";position:absolute;inset:5px;border:2px solid #e5b77c;pointer-events:none}
-.view{position:absolute;inset:12px;overflow:hidden;background:#9ed5df;border:3px solid #74492f}
-.sky{position:absolute;inset:0;background:linear-gradient(to bottom,#9ed5df 0 64%,#a8cf91 64% 73%,#78a96d 73% 100%)}
-.cloud1{position:absolute;top:18%;left:13%;width:15%;height:4%;background:#fff9e9;box-shadow:8px -8px #fff9e9,16px 0 #fff9e9,24px 0 #fff9e9}
-.cloud2{position:absolute;top:35%;right:12%;width:11%;height:4%;background:#fff9e9;box-shadow:8px -8px #fff9e9,16px 0 #fff9e9}
-.hill{position:absolute;bottom:0;left:0;width:100%;height:31%;background:#79ad76;clip-path:polygon(0 65%,20% 22%,38% 62%,63% 12%,100% 58%,100% 100%,0 100%)}
-.cat{position:absolute;width:94%;height:88%;left:3%;bottom:-90%;transition:bottom 620ms steps(9);image-rendering:pixelated;z-index:2}
-.window.open .cat{bottom:-2%}
-.cat svg{width:100%;height:100%;display:block;shape-rendering:crispEdges;overflow:visible}
-.shutter{position:absolute;top:0;height:100%;width:50%;z-index:4;border:5px solid #e3b77d;background:#b77e50;box-shadow:inset 0 0 0 4px #97613f,inset 0 0 0 8px #c99460;transition:transform 520ms steps(7);backface-visibility:hidden}
-.shutter:before{content:"";position:absolute;inset:12px;background:repeating-linear-gradient(to bottom,#c9915d 0 5px,#ae754a 5px 9px);border:3px solid #e0b27a}
-.shutter:after{content:"";position:absolute;top:48%;width:8px;height:16px;background:#f0cd85;box-shadow:2px 2px #8b5c3a}
-.left{left:0;transform-origin:left center}.right{right:0;transform-origin:right center}
-.left:after{right:8px}.right:after{left:8px}
-.window.open .left{transform:rotateY(-108deg)}.window.open .right{transform:rotateY(108deg)}
-.sill{position:absolute;z-index:5;left:-8%;bottom:-12px;width:116%;height:16px;background:#e2b77e;border:3px solid #9a6541;box-shadow:0 5px 0 #774b32}
-.plant{position:absolute;bottom:93px;left:24px;width:36px;height:42px;z-index:1}
-.plant .pot{position:absolute;bottom:0;left:6px;width:24px;height:18px;background:#cf8b68;clip-path:polygon(0 0,100% 0,82% 100%,18% 100%);box-shadow:inset 0 4px #e8b18b}
-.plant .leaf{position:absolute;bottom:16px;left:15px;width:8px;height:18px;background:#6f9f68}
-.plant .leaf:before{content:"";position:absolute;width:10px;height:8px;left:-8px;top:4px;background:#85b879}
-.plant .leaf:after{content:"";position:absolute;width:10px;height:8px;left:5px;top:-2px;background:#91bd7d}
-.controls{position:absolute;left:12px;right:12px;bottom:75px;display:flex;justify-content:center;gap:9px;z-index:7}
-.action{
- min-height:40px;padding:9px 12px;border:3px solid #8e5a3b;background:#fff4dc;color:#795438;
- box-shadow:0 4px 0 #c7a477;font-weight:bold;font-size:11px;letter-spacing:.2px;cursor:pointer;
-}
-.action:active{transform:translateY(3px);box-shadow:0 1px 0 #c7a477}
-.action:disabled{opacity:.48;cursor:not-allowed}
-.hint{position:absolute;bottom:132px;left:0;right:0;text-align:center;color:#9b8060;font-size:10px;letter-spacing:1px;line-height:2.2}
-.message{display:block;font-size:14px;font-weight:bold;color:#76553c;letter-spacing:0}
-.footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#b39a79;font-size:9px;letter-spacing:3px}
-.sparkle{position:absolute;color:#e2b44d;font-size:16px;opacity:0;transition:opacity .3s;z-index:6;pointer-events:none}
-.sparkle.one{top:30%;left:12%}.sparkle.two{top:39%;right:10%}.sparkle.three{top:24%;right:13%;font-size:12px}
-.window.open~.sparkle{opacity:1}
-.cat-body{transform-origin:16px 25px}
-.scratch-leg{transform-box:fill-box;transform-origin:50% 10%;opacity:0}
-.scratch-mark{opacity:0}
-.scene.scratching .cat-body{animation:bob .23s steps(2) infinite}
-.scene.scratching .scratch-leg{opacity:1;animation:scratch .23s steps(2) infinite}
-.scene.scratching .normal-leg{opacity:0}
-.scene.scratching .scratch-mark{opacity:1;animation:twinkle .5s steps(2) infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
-@keyframes scratch{0%,100%{transform:rotate(-12deg) translateY(0)}50%{transform:rotate(18deg) translateY(-2px)}}
-@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
-.window:focus-visible,.action:focus-visible{outline:3px dashed #76553c;outline-offset:5px}
-@media(max-height:680px){.scene{min-height:0;height:100svh}.heading{top:23px}.subtitle{top:46px}.window-wrap{top:44%;width:min(55vw,245px)}.controls{bottom:53px}.hint{bottom:108px}.footer{bottom:10px}.plant{bottom:55px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+html,body{margin:0;min-height:100%;background:#f7ead3;color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+body{padding:18px 12px 28px;background-image:radial-gradient(#e7d4b8 1.2px,transparent 1.2px);background-size:12px 12px}
+button{font:inherit;color:inherit;cursor:pointer;border:3px solid var(--ink);background:var(--cream);box-shadow:4px 4px 0 var(--ink);padding:10px 13px;transition:transform .08s,box-shadow .08s}
+button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+button:focus-visible{outline:3px dashed #2b8eae;outline-offset:4px}
+.app{max-width:960px;margin:0 auto}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 14px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:42px;height:42px;background:var(--pink);border:3px solid var(--ink);display:grid;place-items:center;font-size:22px;box-shadow:3px 3px 0 var(--ink)}
+h1{font-size:clamp(18px,4vw,27px);margin:0;letter-spacing:-1.5px}
+.subtitle{font-size:11px;margin-top:4px;opacity:.7}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.top-actions button{font-size:12px;padding:8px 10px}
+.panel{background:var(--cream);border:4px solid var(--ink);box-shadow:7px 7px 0 var(--ink)}
+.scene{position:relative;overflow:hidden;background:#9bd9ee;border-bottom:4px solid var(--ink);min-height:270px}
+.scene svg{display:block;width:100%;height:auto;image-rendering:pixelated}
+.window-caption{position:absolute;top:12px;left:14px;background:var(--cream);border:2px solid var(--ink);padding:6px 9px;font-size:11px;box-shadow:3px 3px 0 var(--ink)}
+.main-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(270px,.85fr);gap:18px;align-items:start}
+.left-col,.right-col{display:grid;gap:18px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:13px 15px 0}
+.section-head h2{font-size:15px;margin:0}
+.tag{font-size:10px;background:var(--gold);border:2px solid var(--ink);padding:4px 6px}
+.cat-area{padding:0 15px 15px;text-align:center}
+.cat-stage{height:145px;display:grid;place-items:center;position:relative}
+.cat-stage:after{content:"";position:absolute;width:170px;height:14px;bottom:14px;background:#e5d5bd;border:3px solid var(--ink);border-radius:50%;z-index:0}
+#mainCat{width:155px;position:relative;z-index:1;image-rendering:pixelated;filter:drop-shadow(2px 2px 0 rgba(48,43,59,.12))}
+.cat-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+.cat-actions button{font-size:12px}
+#catMessage{min-height:18px;font-size:11px;margin:11px 0 0;color:#725b66}
+.game-card{padding-bottom:14px}
+.game-intro{font-size:11px;line-height:1.65;padding:8px 15px 12px;color:#6c5d62}
+.game-frame{margin:0 14px;border:3px solid var(--ink);background:#d5f0f3;position:relative;overflow:hidden}
+#gameCanvas{display:block;width:100%;height:auto;image-rendering:pixelated;touch-action:pan-y}
+.hud{display:flex;justify-content:space-between;gap:8px;padding:10px 15px 0;font-size:12px;flex-wrap:wrap}
+.hud strong{font-size:17px}
+.hud-item{background:#fff0ce;border:2px solid var(--ink);padding:5px 8px}
+.game-controls{display:flex;gap:9px;padding:12px 14px 0;flex-wrap:wrap}
+.game-controls button{flex:1;min-width:105px;font-size:12px}
+.hint{font-size:10px;line-height:1.6;padding:10px 15px 0;color:#77676a}
+.mobile-pad{display:flex;gap:12px;justify-content:center;padding:12px 14px 0}
+.mobile-pad button{width:70px;height:48px;font-size:20px;touch-action:manipulation}
+.footer{text-align:center;font-size:10px;line-height:1.8;opacity:.65;margin:18px auto 0}
+.toast{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;width:min(85%,320px);background:var(--cream);border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:17px;text-align:center}
+.toast h3{margin:0 0 8px;font-size:19px}
+.toast p{font-size:11px;line-height:1.7;margin:0 0 13px}
+.toast button{font-size:12px}
+.hidden{display:none!important}
+@media(max-width:720px){body{padding:12px 9px 22px}.main-layout{grid-template-columns:1fr;gap:14px}.scene{min-height:0}.topline{align-items:flex-start}.panel{box-shadow:5px 5px 0 var(--ink)}.left-col{order:1}.right-col{order:2}.cat-stage{height:130px}.window-caption{font-size:9px;top:8px;left:8px}.subtitle{max-width:220px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<main class="scene" id="scene">
-  <div class="sun" aria-hidden="true"></div><div class="cloud" aria-hidden="true"></div>
-  <div class="heading">A LITTLE WINDOW</div>
-  <div class="subtitle">someone tiny is waiting for you ♡</div>
+<div class="app">
+  <header class="topline">
+    <div class="brand">
+      <div class="brand-mark">ฅ</div>
+      <div><h1>MAY's Little Window</h1><div class="subtitle">16-BIT CAT ROOM · FISH CATCH ARCADE</div></div>
+    </div>
+    <div class="top-actions">
+      <button id="soundBtn" aria-pressed="true">♫ SOUND ON</button>
+      <button id="openWindowBtn">▣ 창문 열기</button>
+    </div>
+  </header>
 
-  <div class="window-wrap">
-    <button class="window" id="window" aria-label="창문 열기" aria-expanded="false">
-      <div class="frame"><div class="view">
-        <div class="sky"></div><div class="cloud1"></div><div class="cloud2"></div><div class="hill"></div>
-        <div class="cat" aria-hidden="true">
-          <svg viewBox="0 0 32 34" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-            <g class="cat-body">
+  <section class="panel" style="margin-bottom:18px">
+    <div class="scene">
+      <div class="window-caption">TODAY'S LITTLE FRIEND : MAY</div>
+      <svg viewBox="0 0 900 300" role="img" aria-label="도트 스타일의 창문과 바깥 풍경">
+        <rect width="900" height="300" fill="#9bd9ee"/>
+        <rect x="0" y="212" width="900" height="88" fill="#9dcf9a"/>
+        <rect x="0" y="244" width="900" height="56" fill="#77b77d"/>
+        <g fill="#fff8e9">
+          <rect x="82" y="44" width="72" height="18"/><rect x="64" y="62" width="110" height="18"/><rect x="98" y="80" width="55" height="18"/>
+          <rect x="668" y="34" width="55" height="16"/><rect x="642" y="50" width="102" height="16"/><rect x="674" y="66" width="60" height="16"/>
+        </g>
+        <g fill="#5f9b79"><rect x="40" y="175" width="42" height="58"/><rect x="26" y="158" width="70" height="24"/><rect x="710" y="170" width="50" height="63"/><rect x="690" y="151" width="90" height="24"/><rect x="785" y="191" width="28" height="42"/></g>
+        <g fill="#f5d36d"><rect x="205" y="112" width="18" height="18"/><rect x="214" y="103" width="18" height="18"/><rect x="232" y="112" width="18" height="18"/><rect x="214" y="130" width="18" height="18"/><rect x="223" y="121" width="10" height="10"/></g>
+        <!-- window frame -->
+        <rect x="287" y="18" width="326" height="256" fill="#302b3b"/>
+        <rect x="299" y="30" width="302" height="232" fill="#fff8e9"/>
+        <rect x="310" y="41" width="280" height="210" fill="#9bd9ee"/>
+        <rect x="310" y="190" width="280" height="61" fill="#9dcf9a"/>
+        <rect x="438" y="41" width="20" height="210" fill="#fff8e9"/>
+        <rect x="310" y="138" width="280" height="20" fill="#fff8e9"/>
+        <rect x="299" y="30" width="302" height="12" fill="#f4b8bf"/>
+        <rect x="299" y="250" width="302" height="12" fill="#f4b8bf"/>
+        <rect x="274" y="264" width="352" height="16" fill="#9b735a"/>
+        <rect x="274" y="280" width="352" height="8" fill="#302b3b"/>
+        <!-- opened shutter, toggled by button -->
+        <g id="shutter">
+          <rect x="291" y="28" width="145" height="230" fill="#f4b8bf" stroke="#302b3b" stroke-width="8"/>
+          <g stroke="#9b735a" stroke-width="4"><line x1="304" y1="72" x2="423" y2="72"/><line x1="304" y1="119" x2="423" y2="119"/><line x1="304" y1="166" x2="423" y2="166"/><line x1="304" y1="213" x2="423" y2="213"/></g>
+          <rect x="408" y="135" width="13" height="25" fill="#f5d36d" stroke="#302b3b" stroke-width="4"/>
+        </g>
+        <!-- little pixel birds -->
+        <g fill="#302b3b"><rect x="500" y="78" width="10" height="5"/><rect x="510" y="73" width="10" height="5"/><rect x="520" y="78" width="10" height="5"/><rect x="510" y="83" width="10" height="5"/></g>
+      </svg>
+    </div>
+  </section>
+
+  <div class="main-layout">
+    <div class="left-col">
+      <section class="panel">
+        <div class="section-head"><h2>♡ MAY가 기다리고 있어</h2><span class="tag">ODD-EYE CAT</span></div>
+        <div class="cat-area">
+          <div class="cat-stage">
+            <svg id="mainCat" viewBox="0 0 160 128" aria-label="흰 고양이 MAY" role="img">
               <!-- tail -->
-              <path fill="#d8d5d1" d="M22 25h3v2h2v-3h2v4h-2v3h-4v-2h-2v-2h1z"/>
-              <path fill="#fffdf8" d="M22 26h3v2h2v-2h1v2h-2v3h-3v-2h-2v-2h1z"/>
-              <!-- ears -->
-              <path fill="#c9c7c4" d="M4 11V3h4v3h4v3h8V6h4V3h4v8h-3v3H7v-3z"/>
-              <path fill="#fffdf8" d="M5 10V4h2v4h4v3h10V8h4V4h2v6h-3v3H8v-3z"/>
-              <path fill="#e8a6a8" d="M7 5h2v3H7zM24 5h2v3h-2z"/>
-              <path fill="#f3c2bf" d="M7 5h1v2H7zM24 5h1v2h-1z"/>
-              <!-- head -->
-              <path fill="#c9c7c4" d="M4 11h3V9h5v2h8V9h5v2h3v4h2v8h-2v3h-4v2H8v-2H5v-3H3v-8h1z"/>
-              <path fill="#fffdf8" d="M5 11h5v2h12v-2h5v4h2v7h-2v3h-4v2H9v-2H6v-3H5v-7h1z"/>
-              <path fill="#ffffff" d="M10 11h3v1h-3zM19 11h3v1h-3zM7 14h1v3H7z"/>
-              <path fill="#eeece8" d="M5 20h2v3h3v2H7v-2H5zM25 20h2v3h-2v2h-3v-2h3z"/>
-              <!-- heterochromia, viewer's left yellow -->
-              <path fill="#a58b5e" d="M7 14h7v6H7z"/><path fill="#f2c94c" d="M8 14h5v5H8z"/>
-              <path fill="#ffe58a" d="M8 14h2v2H8z"/><path fill="#54453d" d="M10 15h2v4h-2z"/><path fill="#fff" d="M9 14h1v2H9z"/>
-              <!-- viewer's right blue -->
-              <path fill="#6ca8c7" d="M19 14h7v6h-7z"/><path fill="#69c5ef" d="M20 14h5v5h-5z"/>
-              <path fill="#b9edff" d="M20 14h2v2h-2z"/><path fill="#54453d" d="M22 15h2v4h-2z"/><path fill="#fff" d="M21 14h1v2h-1z"/>
-              <!-- nose + smile -->
-              <path fill="#d98f9a" d="M15 20h2v2h-2z"/>
-              <path fill="#87675e" d="M16 22v2h-2v-1h1v-1zM17 22v1h1v1h-2v-2z"/>
-              <path stroke="#b5aaa0" stroke-width=".4" d="M2 19h6M2 21h6M24 19h6M24 21h6"/>
-              <!-- collar and tag: MAY -->
-              <path fill="#b75c72" d="M9 26h14v2H9z"/>
-              <path fill="#f1c65d" d="M14 27h4v4h-4z"/>
-              <path fill="#fff2bf" d="M15 28h2v2h-2z"/>
-              <path fill="#b75c72" d="M15 28h1v1h-1zM16 29h1v1h-1z"/>
+              <rect x="117" y="73" width="12" height="29" fill="#fff8e9" stroke="#302b3b" stroke-width="4"/><rect x="128" y="61" width="12" height="20" fill="#fff8e9" stroke="#302b3b" stroke-width="4"/>
               <!-- body -->
-              <path fill="#d0ceca" d="M9 28h14v2h3v3h2v1H4v-1h2v-3h3z"/>
-              <path fill="#fffdf8" d="M10 28h12v2h3v3h2v1H5v-1h2v-3h3z"/>
-              <!-- ordinary paw -->
-              <path class="normal-leg" fill="#eeece8" d="M8 31h5v2H8zM19 31h5v2h-5z"/>
-              <path class="normal-leg" fill="#fff" d="M8 31h4v1H8zM20 31h3v1h-3z"/>
-              <!-- raised hind paw scratches ear when button toggled -->
-              <g class="scratch-leg">
-                <path fill="#d0ceca" d="M21 30h4v-3h-2v-3h-3v3h1z"/>
-                <path fill="#fffdf8" d="M21 29h2v-3h-2v-2h-1v3h1z"/>
-                <path fill="#e8a6a8" d="M20 24h2v1h-2z"/>
-              </g>
-              <path class="scratch-mark" fill="#f4c85e" d="M25 8h2v2h-2zM27 11h2v2h-2zM24 12h1v2h-1z"/>
-              <!-- cheek blush -->
-              <path fill="#f0c2bc" d="M6 20h2v1H6zM24 20h2v1h-2z"/>
-            </g>
-          </svg>
+              <rect x="37" y="67" width="84" height="43" fill="#fff8e9" stroke="#302b3b" stroke-width="4"/>
+              <rect x="48" y="99" width="20" height="15" fill="#fff8e9" stroke="#302b3b" stroke-width="4"/><rect x="91" y="99" width="20" height="15" fill="#fff8e9" stroke="#302b3b" stroke-width="4"/>
+              <!-- ears/head -->
+              <rect x="35" y="25" width="23" height="26" fill="#fff8e9" stroke="#302b3b" stroke-width="4"/><rect x="40" y="31" width="11" height="13" fill="#f4b8bf"/>
+              <rect x="101" y="25" width="23" height="26" fill="#fff8e9" stroke="#302b3b" stroke-width="4"/><rect x="107" y="31" width="11" height="13" fill="#f4b8bf"/>
+              <rect x="36" y="37" width="88" height="46" fill="#fff8e9" stroke="#302b3b" stroke-width="4"/>
+              <!-- eyes: viewer left yellow, viewer right blue -->
+              <rect x="54" y="49" width="18" height="20" fill="#f5d36d" stroke="#302b3b" stroke-width="4"/><rect x="89" y="49" width="18" height="20" fill="#9bd9ee" stroke="#302b3b" stroke-width="4"/>
+              <rect x="61" y="52" width="5" height="13" fill="#302b3b"/><rect x="96" y="52" width="5" height="13" fill="#302b3b"/>
+              <rect x="77" y="69" width="7" height="5" fill="#f4b8bf" stroke="#302b3b" stroke-width="2"/>
+              <rect x="72" y="77" width="16" height="3" fill="#302b3b"/>
+              <!-- whiskers -->
+              <g fill="#302b3b"><rect x="29" y="68" width="22" height="3"/><rect x="30" y="76" width="18" height="3"/><rect x="109" y="68" width="22" height="3"/><rect x="112" y="76" width="18" height="3"/></g>
+              <!-- collar -->
+              <rect x="47" y="84" width="67" height="9" fill="#f4b8bf" stroke="#302b3b" stroke-width="3"/>
+              <rect x="72" y="87" width="19" height="14" fill="#f5d36d" stroke="#302b3b" stroke-width="3"/>
+              <text x="81.5" y="97" font-size="7" font-weight="bold" text-anchor="middle" fill="#302b3b">MAY</text>
+            </svg>
+          </div>
+          <div class="cat-actions">
+            <button id="petBtn">♡ 쓰다듬기</button>
+            <button id="scratchBtn">↻ 귀 긁기</button>
+            <button id="meowBtn">♪ 야옹!</button>
+          </div>
+          <p id="catMessage" aria-live="polite">MAY가 꼬리를 살랑살랑 흔들어요.</p>
         </div>
-      </div>
-      <div class="shutter left"></div><div class="shutter right"></div></div>
-      <div class="sill"></div>
-    </button>
-    <div class="sparkle one" aria-hidden="true">✦</div><div class="sparkle two" aria-hidden="true">✧</div><div class="sparkle three" aria-hidden="true">✦</div>
-  </div>
+      </section>
+      <section class="panel game-card">
+        <div class="section-head"><h2>🐟 생선 받아먹기</h2><span class="tag">ARCADE MODE</span></div>
+        <div class="game-intro">위에서 떨어지는 생선을 받아먹어! 털뭉치는 피해야 해. 30초 동안 최고 점수에 도전해 보자.</div>
+        <div class="hud">
+          <div class="hud-item">SCORE <strong id="score">000</strong></div>
+          <div class="hud-item">TIME <strong id="time">30</strong>s</div>
+          <div class="hud-item">♥ <strong id="lives">3</strong></div>
+          <div class="hud-item">BEST <strong id="best">000</strong></div>
+        </div>
+        <div class="game-frame">
+          <canvas id="gameCanvas" width="480" height="300" aria-label="생선 받아먹기 게임 화면"></canvas>
+          <div id="gameToast" class="toast">
+            <h3>FISH TIME!</h3>
+            <p>← → 방향키 또는 아래 버튼으로 MAY를 움직여 생선을 받아먹어.<br>털뭉치는 피하고, 황금 생선은 보너스!</p>
+            <button id="startBtn">▶ 게임 시작</button>
+          </div>
+        </div>
+        <div class="mobile-pad">
+          <button id="leftBtn" aria-label="왼쪽으로 이동">◀</button>
+          <button id="rightBtn" aria-label="오른쪽으로 이동">▶</button>
+        </div>
+        <div class="game-controls">
+          <button id="restartBtn">↻ 다시 시작</button>
+          <button id="pauseBtn">Ⅱ 일시정지</button>
+        </div>
+        <div class="hint">조작: ← → / A D / 터치 버튼 · 생선 +10 · 황금 생선 +30 · 털뭉치 -1 하트</div>
+      </section>
+    </div>
 
-  <div class="plant" aria-hidden="true"><div class="leaf"></div><div class="pot"></div></div>
-  <div class="wall-shadow" aria-hidden="true"></div>
-  <div class="hint"><span class="message" id="message">창문을 열어 MAY를 만나봐!</span>CLICK THE WINDOW</div>
-  <div class="controls">
-    <button class="action" id="scratch" type="button" disabled>♡ 귀 긁기</button>
-    <button class="action" id="sound" type="button" aria-pressed="true">♪ 소리 켜짐</button>
+    <div class="right-col">
+      <section class="panel" style="padding-bottom:14px">
+        <div class="section-head"><h2>✦ MAY의 게임 기록</h2></div>
+        <div style="padding:12px 15px 0;font-size:12px;line-height:1.9">
+          <div style="display:flex;justify-content:space-between;border-bottom:2px dashed #ddcbb0;padding:7px 0"><span>오늘의 최고 점수</span><strong id="recordLine">000 PTS</strong></div>
+          <div style="display:flex;justify-content:space-between;border-bottom:2px dashed #ddcbb0;padding:7px 0"><span>이번 판 생선</span><strong id="fishCount">0 마리</strong></div>
+          <div style="display:flex;justify-content:space-between;padding:7px 0"><span>황금 생선</span><strong id="goldCount">0 마리</strong></div>
+        </div>
+      </section>
+      <section class="panel" style="padding-bottom:15px">
+        <div class="section-head"><h2>📜 플레이 방법</h2></div>
+        <div style="padding:10px 15px 0;font-size:11px;line-height:1.9">
+          <p>🐟 <b>생선</b> — 10점 획득</p>
+          <p>🌟 <b>황금 생선</b> — 30점 획득</p>
+          <p>🧶 <b>털뭉치</b> — 하트 1개 감소</p>
+          <p>♥ 하트가 모두 사라지거나 시간이 끝나면 게임 종료!</p>
+          <p>최고 기록은 이 기기의 브라우저에 저장돼.</p>
+        </div>
+      </section>
+      <section class="panel" style="padding:15px">
+        <h2 style="font-size:14px;margin:0 0 8px">MAY의 한마디</h2>
+        <p id="quote" style="font-size:11px;line-height:1.8;margin:0">“생선이 떨어진다냥! 준비됐냥?”</p>
+      </section>
+    </div>
   </div>
-  <div class="footer">✦ MAY'S PIXEL CORNER ✦</div>
-</main>
+  <footer class="footer">MADE WITH ♡ FOR MAY · 16-BIT PIXEL WORLD<br>이 페이지는 인터넷 연결 없이도 실행할 수 있어요.</footer>
+</div>
+
 <script>
 (() => {
-  const win = document.getElementById("window");
-  const message = document.getElementById("message");
-  const scene = document.getElementById("scene");
-  const scratch = document.getElementById("scratch");
-  const soundButton = document.getElementById("sound");
-  let soundOn = true;
-  let audioCtx = null;
-  let scratchTimer = null;
-
-  // A tiny synthesized "nyaow" made with Web Audio; no external audio file required.
-  function meow() {
-    if (!soundOn) return;
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      audioCtx = audioCtx || new AudioContext();
-      if (audioCtx.state === "suspended") audioCtx.resume();
-      const t = audioCtx.currentTime;
-      const master = audioCtx.createGain();
-      master.gain.setValueAtTime(0.0001, t);
-      master.gain.exponentialRampToValueAtTime(0.16, t + 0.035);
-      master.gain.exponentialRampToValueAtTime(0.0001, t + 0.48);
-      master.connect(audioCtx.destination);
-
-      const osc = audioCtx.createOscillator();
-      const tone = audioCtx.createBiquadFilter();
-      tone.type = "bandpass";
-      tone.frequency.setValueAtTime(950, t);
-      tone.frequency.linearRampToValueAtTime(1450, t + 0.12);
-      tone.frequency.linearRampToValueAtTime(720, t + 0.43);
-      tone.Q.value = 1.2;
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(620, t);
-      osc.frequency.linearRampToValueAtTime(880, t + 0.11);
-      osc.frequency.linearRampToValueAtTime(480, t + 0.43);
-      osc.connect(tone); tone.connect(master);
-      osc.start(t); osc.stop(t + 0.49);
-
-      const overtone = audioCtx.createOscillator();
-      const og = audioCtx.createGain();
-      og.gain.setValueAtTime(0.0001, t);
-      og.gain.exponentialRampToValueAtTime(0.035, t + 0.04);
-      og.gain.exponentialRampToValueAtTime(0.0001, t + 0.36);
-      overtone.type = "sine";
-      overtone.frequency.setValueAtTime(1240, t);
-      overtone.frequency.linearRampToValueAtTime(1680, t + 0.12);
-      overtone.frequency.linearRampToValueAtTime(850, t + 0.35);
-      overtone.connect(og); og.connect(master);
-      overtone.start(t); overtone.stop(t + 0.38);
-    } catch (e) { /* Audio is optional; interaction still works. */ }
+  const $ = id => document.getElementById(id);
+  let soundOn = true, windowOpen = false, scratchTimer;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audio;
+  function tone(freq=500,duration=.12,type='square',volume=.045,delay=0){
+    if(!soundOn || !AudioCtx) return;
+    try{
+      audio = audio || new AudioCtx();
+      if(audio.state === 'suspended') audio.resume();
+      const osc=audio.createOscillator(), gain=audio.createGain();
+      osc.type=type; osc.frequency.setValueAtTime(freq,audio.currentTime+delay);
+      gain.gain.setValueAtTime(volume,audio.currentTime+delay);
+      gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+delay+duration);
+      osc.connect(gain);gain.connect(audio.destination);osc.start(audio.currentTime+delay);osc.stop(audio.currentTime+delay+duration);
+    }catch(e){}
   }
-
-  win.addEventListener("click", () => {
-    const opened = win.classList.toggle("open");
-    win.setAttribute("aria-expanded", String(opened));
-    win.setAttribute("aria-label", opened ? "창문 닫기" : "창문 열기");
-    scratch.disabled = !opened;
-    if (!opened) stopScratch();
-    message.textContent = opened ? "야옹! 안녕, 나는 MAY야 ♡" : "창문을 열어 MAY를 만나봐!";
-    if (opened) meow();
+  function meow(){ tone(760,.09,'triangle',.07);tone(590,.12,'triangle',.06,.09);tone(410,.18,'triangle',.05,.2); }
+  $('soundBtn').addEventListener('click',()=>{
+    soundOn=!soundOn;$('soundBtn').textContent=soundOn?'♫ SOUND ON':'♫ SOUND OFF';$('soundBtn').setAttribute('aria-pressed',String(soundOn));
+    if(soundOn) tone(640,.08);
+  });
+  $('openWindowBtn').addEventListener('click',()=>{
+    windowOpen=!windowOpen;$('shutter').style.transform=windowOpen?'translate(-125px,0) rotate(-3deg)':'translate(0,0)';$('shutter').style.transformOrigin='left center';$('shutter').style.transition='transform .35s steps(5)';
+    $('openWindowBtn').textContent=windowOpen?'▣ 창문 닫기':'▣ 창문 열기';
+    if(windowOpen){meow();$('catMessage').textContent='야옹! MAY가 창문으로 빼꼼 나왔어요.';} else {$('catMessage').textContent='MAY가 창문 안에서 꼬리를 흔들어요.';}
+  });
+  $('petBtn').addEventListener('click',()=>{ $('catMessage').textContent=['골골골… 기분이 좋아요!','MAY가 손에 머리를 부볐어요.','기분 좋은 꼬리 살랑살랑!'][Math.floor(Math.random()*3)];tone(560,.08,'triangle');tone(700,.1,'triangle',.04,.08);});
+  $('meowBtn').addEventListener('click',()=>{meow();$('catMessage').textContent='냐아옹! MAY가 대답했어요.';});
+  $('scratchBtn').addEventListener('click',()=>{
+    const cat=$('mainCat');cat.animate([{transform:'rotate(0deg) translateY(0)'},{transform:'rotate(-4deg) translateY(-5px)'},{transform:'rotate(4deg) translateY(-2px)'},{transform:'rotate(-4deg) translateY(-5px)'},{transform:'rotate(0deg) translateY(0)'}],{duration:650,iterations:2});
+    $('catMessage').textContent='뒷발로 귀를 벅벅! 시원하다냥~';tone(400,.07,'square',.03);tone(440,.07,'square',.03,.12);
   });
 
-  function stopScratch() {
-    scene.classList.remove("scratching");
-    scratch.setAttribute("aria-pressed", "false");
-    scratch.textContent = "♡ 귀 긁기";
-    if (scratchTimer) clearTimeout(scratchTimer);
-    scratchTimer = null;
+  // Pixel-art canvas game
+  const canvas=$('gameCanvas'), ctx=canvas.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+  const W=canvas.width,H=canvas.height;
+  let running=false,paused=false,ended=false,score=0,lives=3,timeLeft=30,fishCount=0,goldCount=0,playerX=W/2,items=[],last=0,spawn=0,raf=0;
+  const keys={left:false,right:false};
+  let best=0;try{best=Number(localStorage.getItem('mayFishBest')||0)}catch(e){}
+  $('best').textContent=pad(best);$('recordLine').textContent=pad(best)+' PTS';
+  function pad(n){return String(n).padStart(3,'0')}
+  function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h)}
+  function text(t,x,y,color='#302b3b',size=12){ctx.fillStyle=color;ctx.font=`bold ${size}px monospace`;ctx.fillText(t,x,y)}
+  function drawFish(x,y,gold=false){
+    const c=gold?'#f5d36d':'#f28d73', dark='#302b3b', light=gold?'#fff0a6':'#ffd5bd';
+    rect(x-9,y-4,14,10,dark);rect(x-7,y-2,11,6,c);rect(x+5,y-2,6,6,dark);rect(x+7,y-5,5,12,c);rect(x-5,y-5,5,3,light);rect(x-4,y-1,2,2,dark);
+    if(gold){rect(x-3,y-10,4,4,'#fff8e9');rect(x-1,y-8,2,2,'#fff8e9')}
   }
-  scratch.addEventListener("click", () => {
-    if (!win.classList.contains("open")) return;
-    if (scene.classList.contains("scratching")) {
-      stopScratch();
-      message.textContent = "간지러웠어! 고마워 ♡";
-      return;
+  function drawYarn(x,y){rect(x-7,y-7,14,14,'#302b3b');rect(x-5,y-8,10,14,'#d78cc7');rect(x-8,y-4,14,8,'#d78cc7');rect(x-3,y-5,3,10,'#f4b8bf');rect(x+4,y+5,7,3,'#302b3b');}
+  function drawPlayer(x,y){
+    // little white MAY sprite with heterochromia and MAY tag
+    rect(x-22,y+18,44,6,'#8dc9d0');
+    rect(x-18,y-1,36,23,'#302b3b');rect(x-15,y+2,30,17,'#fff8e9');
+    rect(x-17,y-19,34,23,'#302b3b');rect(x-14,y-16,28,20,'#fff8e9');
+    rect(x-16,y-27,9,12,'#302b3b');rect(x-13,y-24,5,8,'#fff8e9');rect(x+7,y-27,9,12,'#302b3b');rect(x+10,y-24,5,8,'#fff8e9');
+    rect(x-10,y-11,7,7,'#f5d36d');rect(x+3,y-11,7,7,'#9bd9ee');rect(x-7,y-10,2,5,'#302b3b');rect(x+6,y-10,2,5,'#302b3b');
+    rect(x-2,y-2,4,3,'#f4b8bf');rect(x-7,y+4,14,3,'#f4b8bf');
+    rect(x-13,y+9,26,5,'#f4b8bf');rect(x-5,y+10,10,7,'#f5d36d');rect(x-4,y+11,8,3,'#302b3b');rect(x-3,y+11,6,2,'#fff8e9');
+    rect(x+15,y+5,9,5,'#fff8e9');rect(x+20,y+1,7,5,'#302b3b');
+  }
+  function drawBackground(){
+    rect(0,0,W,H,'#d5f0f3');rect(0,0,W,218,'#b9e7ee');
+    // clouds
+    rect(35,35,32,7,'#fff8e9');rect(44,28,18,7,'#fff8e9');rect(155,58,26,6,'#fff8e9');rect(163,51,15,7,'#fff8e9');
+    // distant hills
+    rect(0,200,W,100,'#a7d9a2');rect(0,224,W,76,'#83c48e');
+    for(let i=0;i<9;i++){let x=i*61+9;rect(x,196,6,18,'#629e73');rect(x-5,190,16,8,'#629e73');}
+    // floor
+    rect(0,265,W,35,'#f7ead3');rect(0,265,W,4,'#302b3b');
+    for(let x=0;x<W;x+=16)rect(x,282,8,3,'#e1c8a7');
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);drawBackground();
+    items.forEach(it=>{if(it.type==='yarn')drawYarn(it.x,it.y);else drawFish(it.x,it.y,it.type==='gold')});
+    drawPlayer(playerX,246);
+    if(!running && !ended){rect(115,112,250,45,'#fff8e9');rect(115,112,250,4,'#302b3b');text('READY, MAY?',178,139,'#302b3b',16);}
+    if(paused&&running){rect(135,112,210,45,'#fff8e9');rect(135,112,210,4,'#302b3b');text('PAUSED',201,140,'#302b3b',16);}
+  }
+  function updateHud(){
+    $('score').textContent=pad(score);$('time').textContent=Math.max(0,Math.ceil(timeLeft));$('lives').textContent=lives;$('fishCount').textContent=fishCount+' 마리';$('goldCount').textContent=goldCount+' 마리';
+  }
+  function endGame(){
+    running=false;paused=false;ended=true;cancelAnimationFrame(raf);
+    if(score>best){best=score;try{localStorage.setItem('mayFishBest',String(best))}catch(e){}}
+    $('best').textContent=pad(best);$('recordLine').textContent=pad(best)+' PTS';
+    $('gameToast').classList.remove('hidden');
+    $('gameToast').innerHTML=`<h3>${lives<=0?'GAME OVER!':'TIME UP!'}</h3><p>이번 점수 <b>${score}점</b><br>생선 ${fishCount}마리 · 황금 생선 ${goldCount}마리<br>${score>=best?'최고 기록에 도전했어!':'다음엔 더 높은 점수에 도전해 봐!'}</p><button id="startBtn">↻ 다시 도전</button>`;
+    $('startBtn').addEventListener('click',startGame);
+    $('quote').textContent=score>=best?'“우와! 최고 기록이다냥!”':'“다음엔 더 많이 잡아보자냥!”';
+    tone(650,.12,'square',.04);tone(490,.18,'square',.04,.13);draw();updateHud();
+  }
+  function frame(ts){
+    if(!running||paused)return;
+    if(!last)last=ts;const dt=Math.min((ts-last)/1000,.05);last=ts;
+    timeLeft-=dt;spawn-=dt;
+    if(spawn<=0){const r=Math.random();items.push({x:18+Math.random()*(W-36),y:-12,vy:80+Math.random()*45+(30-timeLeft)*1.6,type:r<.14?'yarn':r<.28?'gold':'fish'});spawn=Math.max(.28,.8-timeLeft*.009);}
+    if(keys.left)playerX-=190*dt;if(keys.right)playerX+=190*dt;playerX=Math.max(28,Math.min(W-28,playerX));
+    const py=246;
+    for(let i=items.length-1;i>=0;i--){
+      const it=items[i];it.y+=it.vy*dt;
+      if(it.y>py-17&&it.y<py+18&&Math.abs(it.x-playerX)<27){
+        if(it.type==='yarn'){lives--;tone(180,.18,'sawtooth',.05);$('quote').textContent='“으앗, 털뭉치다냥!”';}
+        else{const val=it.type==='gold'?30:10;score+=val;fishCount++;if(it.type==='gold')goldCount++;tone(it.type==='gold'?1000:740,.07,'square',.045);if(it.type==='gold')tone(1250,.09,'square',.04,.07);$('quote').textContent=it.type==='gold'?'“황금 생선이다냥!!”':'“냠냠! 맛있다냥!”';}
+        items.splice(i,1);updateHud();if(lives<=0){endGame();return;}continue;
+      }
+      if(it.y>H+20)items.splice(i,1);
     }
-    scene.classList.add("scratching");
-    scratch.setAttribute("aria-pressed", "true");
-    scratch.textContent = "■ 그만하기";
-    message.textContent = "긁적긁적… 에헤헤!";
-    scratchTimer = setTimeout(() => {
-      stopScratch();
-      message.textContent = "시원하다냥! ♡";
-    }, 3200);
+    updateHud();draw();
+    if(timeLeft<=0){timeLeft=0;endGame();return;}
+    raf=requestAnimationFrame(frame);
+  }
+  function startGame(){
+    cancelAnimationFrame(raf);running=true;paused=false;ended=false;score=0;lives=3;timeLeft=30;fishCount=0;goldCount=0;playerX=W/2;items=[];last=0;spawn=.4;
+    $('gameToast').classList.add('hidden');$('pauseBtn').textContent='Ⅱ 일시정지';$('quote').textContent='“생선이 떨어진다냥! 준비됐냥?”';updateHud();draw();raf=requestAnimationFrame(frame);
+  }
+  $('startBtn').addEventListener('click',startGame);
+  $('restartBtn').addEventListener('click',startGame);
+  $('pauseBtn').addEventListener('click',()=>{
+    if(!running&&!paused)return;
+    if(!paused){paused=true;$('pauseBtn').textContent='▶ 계속하기';draw();}
+    else{paused=false;last=0;$('pauseBtn').textContent='Ⅱ 일시정지';raf=requestAnimationFrame(frame);}
   });
-  soundButton.addEventListener("click", () => {
-    soundOn = !soundOn;
-    soundButton.setAttribute("aria-pressed", String(soundOn));
-    soundButton.textContent = soundOn ? "♪ 소리 켜짐" : "♪ 소리 꺼짐";
-  });
+  function keyDown(e){if(['ArrowLeft','ArrowRight','a','A','d','D'].includes(e.key))e.preventDefault();if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')keys.left=true;if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')keys.right=true;if(e.key===' '&& !running)startGame();}
+  function keyUp(e){if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')keys.left=false;if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')keys.right=false;}
+  window.addEventListener('keydown',keyDown);window.addEventListener('keyup',keyUp);window.addEventListener('blur',()=>{keys.left=false;keys.right=false;});
+  function holdButton(id,key){const el=$(id);const down=e=>{e.preventDefault();keys[key]=true;};const up=e=>{e.preventDefault();keys[key]=false;};el.addEventListener('pointerdown',down);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);el.addEventListener('pointerleave',up);}
+  holdButton('leftBtn','left');holdButton('rightBtn','right');
+  draw();updateHud();
 })();
 </script>
 </body>
