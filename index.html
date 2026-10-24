@@ -3,228 +3,247 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f4e8d0">
-<title>Little Window — Pixel Cat</title>
+<meta name="theme-color" content="#f7e9d2">
+<title>Little Window — MAY the Pixel Cat</title>
 <style>
-:root {
-  --wall:#f4e8d0; --wall-line:#e8d6b6; --wood:#96613f; --wood-light:#c18b5d;
-  --wood-hi:#e4b77f; --ink:#624631; --muted:#9b8060;
+:root{
+ --wall:#f7e9d2;--line:#ead8b9;--wood:#8e5a3b;--wood2:#b97e50;
+ --wood3:#e4b77e;--ink:#70513a;--pink:#edb6ba;--cream:#fffdf7;
 }
-* { box-sizing:border-box; }
-html,body { margin:0; width:100%; min-height:100%; }
-body {
-  min-height:100svh; display:grid; place-items:center; overflow:hidden;
-  background:#ead8b8; color:var(--ink);
-  font-family:"Courier New",monospace;
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;width:100%}
+body{min-height:100svh;display:grid;place-items:center;background:#e8d5b4;color:var(--ink);font-family:"Courier New",monospace}
+button{font:inherit}
+.scene{
+ position:relative;isolation:isolate;overflow:hidden;width:min(100vw,480px);height:min(100svh,820px);min-height:610px;
+ border:8px solid #fff8e9;background-color:var(--wall);
+ background-image:linear-gradient(var(--line) 2px,transparent 2px),linear-gradient(90deg,var(--line) 2px,transparent 2px);
+ background-size:32px 32px;box-shadow:0 0 0 4px #c9ad83,0 18px 50px #8b6d4930
 }
-button { font:inherit; }
-.scene {
-  position:relative; isolation:isolate; overflow:hidden;
-  width:min(100vw,480px); height:min(100svh,820px); min-height:600px;
-  border:8px solid #fff7e8;
-  background-color:var(--wall);
-  background-image:linear-gradient(var(--wall-line) 2px,transparent 2px),
-                   linear-gradient(90deg,var(--wall-line) 2px,transparent 2px);
-  background-size:32px 32px;
-  box-shadow:0 0 0 4px #c9ad83, 0 18px 50px #8b6d4930;
+.wall-shadow{position:absolute;left:0;right:0;bottom:0;height:105px;background:#e4d0ad;border-top:5px solid #d2b58b;z-index:-1}
+.sun{position:absolute;top:52px;right:44px;width:27px;height:27px;background:#f4c85e;box-shadow:0 0 0 6px #f4c85e30,0 0 0 2px #dba94a}
+.sun:after{content:"";position:absolute;inset:8px;background:#ffe49a}
+.cloud{position:absolute;top:126px;left:40px;width:30px;height:8px;background:#fff9e9;box-shadow:8px -8px #fff9e9,16px 0 #fff9e9,24px 0 #fff9e9}
+.heading{position:absolute;top:42px;left:0;right:0;text-align:center;color:#8c704f;font-size:12px;letter-spacing:4px;font-weight:bold;text-shadow:2px 2px #fff8e8}
+.subtitle{position:absolute;top:66px;left:0;right:0;text-align:center;color:#b09978;font-size:10px;letter-spacing:1px}
+.window-wrap{position:absolute;top:47%;left:50%;width:min(69vw,292px);aspect-ratio:.86;transform:translate(-50%,-50%);filter:drop-shadow(8px 12px 0 #b49a7860)}
+.window{appearance:none;border:0;padding:0;position:absolute;inset:0;width:100%;height:100%;cursor:pointer;background:transparent;color:inherit;perspective:700px;-webkit-tap-highlight-color:transparent}
+.frame{position:absolute;inset:0;padding:12px;background:var(--wood);border:5px solid var(--wood2);box-shadow:inset 0 0 0 4px #754a32,inset 0 0 0 8px #b67d50}
+.frame:before{content:"";position:absolute;inset:5px;border:2px solid #e5b77c;pointer-events:none}
+.view{position:absolute;inset:12px;overflow:hidden;background:#9ed5df;border:3px solid #74492f}
+.sky{position:absolute;inset:0;background:linear-gradient(to bottom,#9ed5df 0 64%,#a8cf91 64% 73%,#78a96d 73% 100%)}
+.cloud1{position:absolute;top:18%;left:13%;width:15%;height:4%;background:#fff9e9;box-shadow:8px -8px #fff9e9,16px 0 #fff9e9,24px 0 #fff9e9}
+.cloud2{position:absolute;top:35%;right:12%;width:11%;height:4%;background:#fff9e9;box-shadow:8px -8px #fff9e9,16px 0 #fff9e9}
+.hill{position:absolute;bottom:0;left:0;width:100%;height:31%;background:#79ad76;clip-path:polygon(0 65%,20% 22%,38% 62%,63% 12%,100% 58%,100% 100%,0 100%)}
+.cat{position:absolute;width:94%;height:88%;left:3%;bottom:-90%;transition:bottom 620ms steps(9);image-rendering:pixelated;z-index:2}
+.window.open .cat{bottom:-2%}
+.cat svg{width:100%;height:100%;display:block;shape-rendering:crispEdges;overflow:visible}
+.shutter{position:absolute;top:0;height:100%;width:50%;z-index:4;border:5px solid #e3b77d;background:#b77e50;box-shadow:inset 0 0 0 4px #97613f,inset 0 0 0 8px #c99460;transition:transform 520ms steps(7);backface-visibility:hidden}
+.shutter:before{content:"";position:absolute;inset:12px;background:repeating-linear-gradient(to bottom,#c9915d 0 5px,#ae754a 5px 9px);border:3px solid #e0b27a}
+.shutter:after{content:"";position:absolute;top:48%;width:8px;height:16px;background:#f0cd85;box-shadow:2px 2px #8b5c3a}
+.left{left:0;transform-origin:left center}.right{right:0;transform-origin:right center}
+.left:after{right:8px}.right:after{left:8px}
+.window.open .left{transform:rotateY(-108deg)}.window.open .right{transform:rotateY(108deg)}
+.sill{position:absolute;z-index:5;left:-8%;bottom:-12px;width:116%;height:16px;background:#e2b77e;border:3px solid #9a6541;box-shadow:0 5px 0 #774b32}
+.plant{position:absolute;bottom:93px;left:24px;width:36px;height:42px;z-index:1}
+.plant .pot{position:absolute;bottom:0;left:6px;width:24px;height:18px;background:#cf8b68;clip-path:polygon(0 0,100% 0,82% 100%,18% 100%);box-shadow:inset 0 4px #e8b18b}
+.plant .leaf{position:absolute;bottom:16px;left:15px;width:8px;height:18px;background:#6f9f68}
+.plant .leaf:before{content:"";position:absolute;width:10px;height:8px;left:-8px;top:4px;background:#85b879}
+.plant .leaf:after{content:"";position:absolute;width:10px;height:8px;left:5px;top:-2px;background:#91bd7d}
+.controls{position:absolute;left:12px;right:12px;bottom:75px;display:flex;justify-content:center;gap:9px;z-index:7}
+.action{
+ min-height:40px;padding:9px 12px;border:3px solid #8e5a3b;background:#fff4dc;color:#795438;
+ box-shadow:0 4px 0 #c7a477;font-weight:bold;font-size:11px;letter-spacing:.2px;cursor:pointer;
 }
-.wall-shadow {
-  position:absolute; left:0; right:0; bottom:0; height:105px;
-  background:#e4d0ad; border-top:5px solid #d2b58b;
-}
-.sun {
-  position:absolute; top:54px; right:45px; width:28px; height:28px;
-  background:#f4c85e; box-shadow:0 0 0 6px #f4c85e30, 0 0 0 2px #dba94a;
-}
-.sun:after { content:""; position:absolute; inset:8px; background:#ffe49a; }
-.cloud {
-  position:absolute; top:125px; left:40px; width:32px; height:8px;
-  background:#fff9e9; box-shadow:8px -8px #fff9e9,16px 0 #fff9e9,24px 0 #fff9e9;
-}
-.heading {
-  position:absolute; top:47px; left:0; right:0; text-align:center;
-  color:#8c704f; font-size:12px; letter-spacing:4px; font-weight:bold;
-  text-shadow:2px 2px #fff8e8;
-}
-.subtitle {
-  position:absolute; top:72px; left:0; right:0; text-align:center;
-  color:#b09978; font-size:10px; letter-spacing:2px;
-}
-.window-wrap {
-  position:absolute; top:49%; left:50%; width:min(68vw,292px); aspect-ratio: .86;
-  transform:translate(-50%,-50%); filter:drop-shadow(8px 12px 0 #b49a7860);
-}
-.window {
-  appearance:none; border:0; padding:0; position:absolute; inset:0; width:100%; height:100%;
-  cursor:pointer; background:transparent; color:inherit; perspective:700px;
-  -webkit-tap-highlight-color:transparent;
-}
-.frame {
-  position:absolute; inset:0; padding:12px; background:var(--wood);
-  border:5px solid var(--wood-light);
-  box-shadow:inset 0 0 0 4px #754a32, inset 0 0 0 8px #b67d50;
-}
-.frame:before {
-  content:""; position:absolute; inset:5px; border:2px solid #e5b77c; pointer-events:none;
-}
-.view {
-  position:absolute; inset:12px; overflow:hidden; background:#9ed5df;
-  border:3px solid #74492f;
-}
-.sky {
-  position:absolute; inset:0;
-  background:linear-gradient(to bottom,#9ed5df 0 64%,#9cc78b 64% 73%,#78a96d 73% 100%);
-}
-.cloud1 { position:absolute; top:18%; left:13%; width:15%; height:4%; background:#fff9e9;
-  box-shadow:8px -8px #fff9e9,16px 0 #fff9e9,24px 0 #fff9e9; }
-.cloud2 { position:absolute; top:35%; right:12%; width:11%; height:4%; background:#fff9e9;
-  box-shadow:8px -8px #fff9e9,16px 0 #fff9e9; }
-.hill { position:absolute; bottom:0; left:0; width:100%; height:31%;
-  background:#79ad76; clip-path:polygon(0 65%,20% 22%,38% 62%,63% 12%,100% 58%,100% 100%,0 100%); }
-.cat {
-  position:absolute; width:88%; height:82%; left:6%; bottom:-87%;
-  transition:bottom 620ms steps(9); image-rendering:pixelated;
-}
-.window.open .cat { bottom:-2%; }
-.cat svg { width:100%; height:100%; display:block; shape-rendering:crispEdges; }
-.shutter {
-  position:absolute; top:0; height:100%; width:50%; z-index:4;
-  border:5px solid #e3b77d; background:#b77e50;
-  box-shadow:inset 0 0 0 4px #97613f, inset 0 0 0 8px #c99460;
-  transition:transform 520ms steps(7); backface-visibility:hidden;
-}
-.shutter:before {
-  content:""; position:absolute; inset:12px;
-  background:repeating-linear-gradient(to bottom,#c9915d 0 5px,#ae754a 5px 9px);
-  border:3px solid #e0b27a;
-}
-.shutter:after {
-  content:""; position:absolute; top:48%; width:8px; height:16px;
-  background:#f0cd85; box-shadow:2px 2px #8b5c3a;
-}
-.left { left:0; transform-origin:left center; }
-.right { right:0; transform-origin:right center; }
-.left:after { right:8px; }
-.right:after { left:8px; }
-.window.open .left { transform:rotateY(-108deg); }
-.window.open .right { transform:rotateY(108deg); }
-.sill {
-  position:absolute; z-index:5; left:-8%; bottom:-12px; width:116%; height:16px;
-  background:#e2b77e; border:3px solid #9a6541;
-  box-shadow:0 5px 0 #774b32;
-}
-.plant {
-  position:absolute; bottom:93px; left:24px; width:36px; height:42px;
-}
-.plant .pot { position:absolute; bottom:0; left:6px; width:24px; height:18px;
-  background:#cf8b68; clip-path:polygon(0 0,100% 0,82% 100%,18% 100%);
-  box-shadow:inset 0 4px #e8b18b; }
-.plant .leaf { position:absolute; bottom:16px; left:15px; width:8px; height:18px; background:#6f9f68; }
-.plant .leaf:before { content:""; position:absolute; width:10px;height:8px;left:-8px;top:4px;background:#85b879; }
-.plant .leaf:after { content:""; position:absolute; width:10px;height:8px;left:5px;top:-2px;background:#91bd7d; }
-.hint {
-  position:absolute; bottom:91px; left:0; right:0; text-align:center;
-  color:#9b8060; font-size:10px; letter-spacing:2px; line-height:2.2;
-}
-.message { display:block; font-size:14px; font-weight:bold; color:#76553c; letter-spacing:0; }
-.footer {
-  position:absolute; bottom:25px; left:0; right:0; text-align:center;
-  color:#b39a79; font-size:9px; letter-spacing:3px;
-}
-.sparkle { position:absolute; color:#e2b44d; font-size:16px; opacity:0; transition:opacity .3s; }
-.sparkle.one { top:30%; left:17%; } .sparkle.two { top:39%; right:15%; }
-.window.open ~ .sparkle { opacity:1; }
-.window:focus-visible { outline:3px dashed #76553c; outline-offset:8px; }
-@media(max-height:650px) {
-  .scene { min-height:0; height:100svh; }
-  .heading { top:25px; } .subtitle { top:48px; }
-  .window-wrap { top:47%; width:min(58vw,245px); }
-  .hint { bottom:55px; } .footer { bottom:14px; }
-  .plant { bottom:65px; }
-}
-@media(prefers-reduced-motion:reduce) {
-  *,*:before,*:after { transition:none !important; }
-}
+.action:active{transform:translateY(3px);box-shadow:0 1px 0 #c7a477}
+.action:disabled{opacity:.48;cursor:not-allowed}
+.hint{position:absolute;bottom:132px;left:0;right:0;text-align:center;color:#9b8060;font-size:10px;letter-spacing:1px;line-height:2.2}
+.message{display:block;font-size:14px;font-weight:bold;color:#76553c;letter-spacing:0}
+.footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#b39a79;font-size:9px;letter-spacing:3px}
+.sparkle{position:absolute;color:#e2b44d;font-size:16px;opacity:0;transition:opacity .3s;z-index:6;pointer-events:none}
+.sparkle.one{top:30%;left:12%}.sparkle.two{top:39%;right:10%}.sparkle.three{top:24%;right:13%;font-size:12px}
+.window.open~.sparkle{opacity:1}
+.cat-body{transform-origin:16px 25px}
+.scratch-leg{transform-box:fill-box;transform-origin:50% 10%;opacity:0}
+.scratch-mark{opacity:0}
+.scene.scratching .cat-body{animation:bob .23s steps(2) infinite}
+.scene.scratching .scratch-leg{opacity:1;animation:scratch .23s steps(2) infinite}
+.scene.scratching .normal-leg{opacity:0}
+.scene.scratching .scratch-mark{opacity:1;animation:twinkle .5s steps(2) infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
+@keyframes scratch{0%,100%{transform:rotate(-12deg) translateY(0)}50%{transform:rotate(18deg) translateY(-2px)}}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+.window:focus-visible,.action:focus-visible{outline:3px dashed #76553c;outline-offset:5px}
+@media(max-height:680px){.scene{min-height:0;height:100svh}.heading{top:23px}.subtitle{top:46px}.window-wrap{top:44%;width:min(55vw,245px)}.controls{bottom:53px}.hint{bottom:108px}.footer{bottom:10px}.plant{bottom:55px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<main class="scene">
-  <div class="sun" aria-hidden="true"></div>
-  <div class="cloud" aria-hidden="true"></div>
+<main class="scene" id="scene">
+  <div class="sun" aria-hidden="true"></div><div class="cloud" aria-hidden="true"></div>
   <div class="heading">A LITTLE WINDOW</div>
-  <div class="subtitle">A tiny friend is waiting inside</div>
+  <div class="subtitle">someone tiny is waiting for you ♡</div>
 
   <div class="window-wrap">
     <button class="window" id="window" aria-label="창문 열기" aria-expanded="false">
-      <div class="frame">
-        <div class="view">
-          <div class="sky"></div>
-          <div class="cloud1"></div><div class="cloud2"></div><div class="hill"></div>
-          <div class="cat" aria-hidden="true">
-            <svg viewBox="0 0 32 34" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-              <!-- pixel tail -->
+      <div class="frame"><div class="view">
+        <div class="sky"></div><div class="cloud1"></div><div class="cloud2"></div><div class="hill"></div>
+        <div class="cat" aria-hidden="true">
+          <svg viewBox="0 0 32 34" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+            <g class="cat-body">
+              <!-- tail -->
               <path fill="#d8d5d1" d="M22 25h3v2h2v-3h2v4h-2v3h-4v-2h-2v-2h1z"/>
               <path fill="#fffdf8" d="M22 26h3v2h2v-2h1v2h-2v3h-3v-2h-2v-2h1z"/>
               <!-- ears -->
-              <path fill="#d8d5d1" d="M4 11V3h4v3h4v3h8V6h4V3h4v8h-3v3H7v-3z"/>
+              <path fill="#c9c7c4" d="M4 11V3h4v3h4v3h8V6h4V3h4v8h-3v3H7v-3z"/>
               <path fill="#fffdf8" d="M5 10V4h2v4h4v3h10V8h4V4h2v6h-3v3H8v-3z"/>
               <path fill="#e8a6a8" d="M7 5h2v3H7zM24 5h2v3h-2z"/>
               <path fill="#f3c2bf" d="M7 5h1v2H7zM24 5h1v2h-1z"/>
-              <!-- head silhouette -->
+              <!-- head -->
               <path fill="#c9c7c4" d="M4 11h3V9h5v2h8V9h5v2h3v4h2v8h-2v3h-4v2H8v-2H5v-3H3v-8h1z"/>
               <path fill="#fffdf8" d="M5 11h5v2h12v-2h5v4h2v7h-2v3h-4v2H9v-2H6v-3H5v-7h1z"/>
-              <!-- fur highlights -->
               <path fill="#ffffff" d="M10 11h3v1h-3zM19 11h3v1h-3zM7 14h1v3H7z"/>
               <path fill="#eeece8" d="M5 20h2v3h3v2H7v-2H5zM25 20h2v3h-2v2h-3v-2h3z"/>
-              <!-- viewer-left yellow eye -->
-              <path fill="#a58b5e" d="M7 14h7v6H7z"/>
-              <path fill="#f2c94c" d="M8 14h5v5H8z"/>
-              <path fill="#ffe58a" d="M8 14h2v2H8z"/>
-              <path fill="#54453d" d="M10 15h2v4h-2z"/>
-              <path fill="#ffffff" d="M9 14h1v2H9z"/>
-              <!-- viewer-right blue eye -->
-              <path fill="#6ca8c7" d="M19 14h7v6h-7z"/>
-              <path fill="#69c5ef" d="M20 14h5v5h-5z"/>
-              <path fill="#b9edff" d="M20 14h2v2h-2z"/>
-              <path fill="#54453d" d="M22 15h2v4h-2z"/>
-              <path fill="#ffffff" d="M21 14h1v2h-1z"/>
-              <!-- nose, mouth, whiskers -->
+              <!-- heterochromia, viewer's left yellow -->
+              <path fill="#a58b5e" d="M7 14h7v6H7z"/><path fill="#f2c94c" d="M8 14h5v5H8z"/>
+              <path fill="#ffe58a" d="M8 14h2v2H8z"/><path fill="#54453d" d="M10 15h2v4h-2z"/><path fill="#fff" d="M9 14h1v2H9z"/>
+              <!-- viewer's right blue -->
+              <path fill="#6ca8c7" d="M19 14h7v6h-7z"/><path fill="#69c5ef" d="M20 14h5v5h-5z"/>
+              <path fill="#b9edff" d="M20 14h2v2h-2z"/><path fill="#54453d" d="M22 15h2v4h-2z"/><path fill="#fff" d="M21 14h1v2h-1z"/>
+              <!-- nose + smile -->
               <path fill="#d98f9a" d="M15 20h2v2h-2z"/>
               <path fill="#87675e" d="M16 22v2h-2v-1h1v-1zM17 22v1h1v1h-2v-2z"/>
               <path stroke="#b5aaa0" stroke-width=".4" d="M2 19h6M2 21h6M24 19h6M24 21h6"/>
-              <!-- body and paws -->
-              <path fill="#d0ceca" d="M9 27h14v2h3v3h2v2H4v-2h2v-3h3z"/>
-              <path fill="#fffdf8" d="M10 27h12v2h3v3h2v2H5v-2h2v-3h3z"/>
-              <path fill="#eeece8" d="M8 31h5v2H8zM19 31h5v2h-5z"/>
-              <path fill="#ffffff" d="M8 31h4v1H8zM20 31h3v1h-3z"/>
-              <!-- tiny cheek blush -->
+              <!-- collar and tag: MAY -->
+              <path fill="#b75c72" d="M9 26h14v2H9z"/>
+              <path fill="#f1c65d" d="M14 27h4v4h-4z"/>
+              <path fill="#fff2bf" d="M15 28h2v2h-2z"/>
+              <path fill="#b75c72" d="M15 28h1v1h-1zM16 29h1v1h-1z"/>
+              <!-- body -->
+              <path fill="#d0ceca" d="M9 28h14v2h3v3h2v1H4v-1h2v-3h3z"/>
+              <path fill="#fffdf8" d="M10 28h12v2h3v3h2v1H5v-1h2v-3h3z"/>
+              <!-- ordinary paw -->
+              <path class="normal-leg" fill="#eeece8" d="M8 31h5v2H8zM19 31h5v2h-5z"/>
+              <path class="normal-leg" fill="#fff" d="M8 31h4v1H8zM20 31h3v1h-3z"/>
+              <!-- raised hind paw scratches ear when button toggled -->
+              <g class="scratch-leg">
+                <path fill="#d0ceca" d="M21 30h4v-3h-2v-3h-3v3h1z"/>
+                <path fill="#fffdf8" d="M21 29h2v-3h-2v-2h-1v3h1z"/>
+                <path fill="#e8a6a8" d="M20 24h2v1h-2z"/>
+              </g>
+              <path class="scratch-mark" fill="#f4c85e" d="M25 8h2v2h-2zM27 11h2v2h-2zM24 12h1v2h-1z"/>
+              <!-- cheek blush -->
               <path fill="#f0c2bc" d="M6 20h2v1H6zM24 20h2v1h-2z"/>
-            </svg>
-          </div>
+            </g>
+          </svg>
         </div>
-        <div class="shutter left"></div>
-        <div class="shutter right"></div>
       </div>
+      <div class="shutter left"></div><div class="shutter right"></div></div>
       <div class="sill"></div>
     </button>
-    <div class="sparkle one" aria-hidden="true">✦</div>
-    <div class="sparkle two" aria-hidden="true">✧</div>
+    <div class="sparkle one" aria-hidden="true">✦</div><div class="sparkle two" aria-hidden="true">✧</div><div class="sparkle three" aria-hidden="true">✦</div>
   </div>
 
   <div class="plant" aria-hidden="true"><div class="leaf"></div><div class="pot"></div></div>
   <div class="wall-shadow" aria-hidden="true"></div>
-  <div class="hint"><span class="message" id="message">누르면 고양이가 나타나요!</span>CLICK THE WINDOW</div>
-  <div class="footer">✦ MADE OF PIXELS ✦</div>
+  <div class="hint"><span class="message" id="message">창문을 열어 MAY를 만나봐!</span>CLICK THE WINDOW</div>
+  <div class="controls">
+    <button class="action" id="scratch" type="button" disabled>♡ 귀 긁기</button>
+    <button class="action" id="sound" type="button" aria-pressed="true">♪ 소리 켜짐</button>
+  </div>
+  <div class="footer">✦ MAY'S PIXEL CORNER ✦</div>
 </main>
 <script>
 (() => {
   const win = document.getElementById("window");
   const message = document.getElementById("message");
+  const scene = document.getElementById("scene");
+  const scratch = document.getElementById("scratch");
+  const soundButton = document.getElementById("sound");
+  let soundOn = true;
+  let audioCtx = null;
+  let scratchTimer = null;
+
+  // A tiny synthesized "nyaow" made with Web Audio; no external audio file required.
+  function meow() {
+    if (!soundOn) return;
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      audioCtx = audioCtx || new AudioContext();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      const t = audioCtx.currentTime;
+      const master = audioCtx.createGain();
+      master.gain.setValueAtTime(0.0001, t);
+      master.gain.exponentialRampToValueAtTime(0.16, t + 0.035);
+      master.gain.exponentialRampToValueAtTime(0.0001, t + 0.48);
+      master.connect(audioCtx.destination);
+
+      const osc = audioCtx.createOscillator();
+      const tone = audioCtx.createBiquadFilter();
+      tone.type = "bandpass";
+      tone.frequency.setValueAtTime(950, t);
+      tone.frequency.linearRampToValueAtTime(1450, t + 0.12);
+      tone.frequency.linearRampToValueAtTime(720, t + 0.43);
+      tone.Q.value = 1.2;
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(620, t);
+      osc.frequency.linearRampToValueAtTime(880, t + 0.11);
+      osc.frequency.linearRampToValueAtTime(480, t + 0.43);
+      osc.connect(tone); tone.connect(master);
+      osc.start(t); osc.stop(t + 0.49);
+
+      const overtone = audioCtx.createOscillator();
+      const og = audioCtx.createGain();
+      og.gain.setValueAtTime(0.0001, t);
+      og.gain.exponentialRampToValueAtTime(0.035, t + 0.04);
+      og.gain.exponentialRampToValueAtTime(0.0001, t + 0.36);
+      overtone.type = "sine";
+      overtone.frequency.setValueAtTime(1240, t);
+      overtone.frequency.linearRampToValueAtTime(1680, t + 0.12);
+      overtone.frequency.linearRampToValueAtTime(850, t + 0.35);
+      overtone.connect(og); og.connect(master);
+      overtone.start(t); overtone.stop(t + 0.38);
+    } catch (e) { /* Audio is optional; interaction still works. */ }
+  }
+
   win.addEventListener("click", () => {
     const opened = win.classList.toggle("open");
     win.setAttribute("aria-expanded", String(opened));
     win.setAttribute("aria-label", opened ? "창문 닫기" : "창문 열기");
-    message.textContent = opened ? "야옹! 안녕! ฅ^•ﻌ•^ฅ" : "누르면 고양이가 나타나요!";
+    scratch.disabled = !opened;
+    if (!opened) stopScratch();
+    message.textContent = opened ? "야옹! 안녕, 나는 MAY야 ♡" : "창문을 열어 MAY를 만나봐!";
+    if (opened) meow();
+  });
+
+  function stopScratch() {
+    scene.classList.remove("scratching");
+    scratch.setAttribute("aria-pressed", "false");
+    scratch.textContent = "♡ 귀 긁기";
+    if (scratchTimer) clearTimeout(scratchTimer);
+    scratchTimer = null;
+  }
+  scratch.addEventListener("click", () => {
+    if (!win.classList.contains("open")) return;
+    if (scene.classList.contains("scratching")) {
+      stopScratch();
+      message.textContent = "간지러웠어! 고마워 ♡";
+      return;
+    }
+    scene.classList.add("scratching");
+    scratch.setAttribute("aria-pressed", "true");
+    scratch.textContent = "■ 그만하기";
+    message.textContent = "긁적긁적… 에헤헤!";
+    scratchTimer = setTimeout(() => {
+      stopScratch();
+      message.textContent = "시원하다냥! ♡";
+    }, 3200);
+  });
+  soundButton.addEventListener("click", () => {
+    soundOn = !soundOn;
+    soundButton.setAttribute("aria-pressed", String(soundOn));
+    soundButton.textContent = soundOn ? "♪ 소리 켜짐" : "♪ 소리 꺼짐";
   });
 })();
 </script>
